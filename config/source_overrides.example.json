@@ -1,0 +1,14 @@
+{
+  "sources": [
+    {
+      "id": "un_desa_stock",
+      "url": "https://example.org/direct-download.xlsx",
+      "filename": "ims_2024_destination_origin.xlsx"
+    },
+    {
+      "id": "cepii_gravity",
+      "url": "https://example.org/gravity_dataset.zip",
+      "filename": "gravity_dataset.zip"
+    }
+  ]
+}

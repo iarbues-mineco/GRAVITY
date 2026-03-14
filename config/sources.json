@@ -1,0 +1,77 @@
+{
+  "project": {
+    "name": "world-migration-gravity",
+    "description": "Source registry for the baseline global migration gravity data acquisition layer."
+  },
+  "sources": [
+    {
+      "id": "world_bank_wdi",
+      "kind": "world_bank",
+      "description": "Annual country-level covariates from the World Bank API.",
+      "base_url": "https://api.worldbank.org/v2/country/all/indicator/{indicator}",
+      "country_metadata_url": "https://api.worldbank.org/v2/country",
+      "format": "json",
+      "per_page": 20000,
+      "output_subdir": "world_bank",
+      "indicators": [
+        {
+          "code": "SP.POP.TOTL",
+          "slug": "population_total",
+          "date_from": 1990,
+          "date_to": 2024
+        },
+        {
+          "code": "NY.GDP.PCAP.PP.KD",
+          "slug": "gdp_pc_ppp_constant",
+          "date_from": 1990,
+          "date_to": 2024
+        },
+        {
+          "code": "SL.UEM.TOTL.ZS",
+          "slug": "unemployment_total_pct",
+          "date_from": 1990,
+          "date_to": 2024
+        },
+        {
+          "code": "SI.POV.GINI",
+          "slug": "gini_index",
+          "date_from": 1990,
+          "date_to": 2024
+        }
+      ]
+    },
+    {
+      "id": "abel_cohen_flows",
+      "kind": "static_file",
+      "description": "Bilateral international migration flow estimates, five-year periods from 1990-1995 to 2015-2020.",
+      "url": "https://figshare.com/ndownloader/files/53235671",
+      "filename": "abel_cohen_flows_1990_2020.csv",
+      "output_subdir": "abel_cohen"
+    },
+    {
+      "id": "un_desa_stock",
+      "kind": "manual_file",
+      "description": "UN DESA International Migrant Stock 2024 destination-origin matrix.",
+      "landing_url": "https://www.un.org/development/desa/pd/content/international-migrant-stock",
+      "output_subdir": "un_desa_stock",
+      "expected_filenames": [
+        "ims_2024_destination_origin.xlsx",
+        "undesa_migrant_stock_2024_destination_origin.xlsx"
+      ],
+      "notes": "The public file URL may change across revisions. Add a direct URL in config/source_overrides.json or place the workbook manually in this folder."
+    },
+    {
+      "id": "cepii_gravity",
+      "kind": "manual_file",
+      "description": "CEPII gravity or GeoDist bilateral controls.",
+      "landing_url": "https://www.cepii.fr/ANGLAISGRAPH/bdd/gravity.htm",
+      "output_subdir": "cepii",
+      "expected_filenames": [
+        "gravity_dataset.zip",
+        "geodist.zip",
+        "dist_cepii.zip"
+      ],
+      "notes": "The download path is not stable enough to hard-code. Add a direct URL in config/source_overrides.json or place the downloaded archive manually in this folder."
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+
+from .pipeline import inventory, run_downloads
+from .settings import Settings
+from .transform import assemble_country_year_covariates
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="World migration gravity data acquisition CLI.")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    inventory_parser = subparsers.add_parser("inventory", help="List configured data sources.")
+    inventory_parser.set_defaults(command_name="inventory")
+
+    download_parser = subparsers.add_parser("download", help="Download one or more data sources.")
+    download_group = download_parser.add_mutually_exclusive_group(required=True)
+    download_group.add_argument("--all", action="store_true", help="Download all configured sources.")
+    download_group.add_argument("--source", action="append", dest="sources", help="Source id to download.")
+    download_parser.set_defaults(command_name="download")
+
+    assemble_parser = subparsers.add_parser(
+        "assemble-country-year",
+        help="Merge downloaded World Bank indicators into a country-year covariate table.",
+    )
+    assemble_parser.set_defaults(command_name="assemble-country-year")
+
+    return parser
+
+
+def _print_paths(paths: list[Path]) -> None:
+    for path in paths:
+        print(path)
+
+
+def main() -> None:
+    parser = build_parser()
+    args = parser.parse_args()
+    settings = Settings.discover()
+
+    if args.command == "inventory":
+        for record in inventory(settings):
+            print(f"{record['id']}\t{record['kind']}\t{record['automation']}\t{record['description']}")
+        return
+
+    if args.command == "download":
+        selected = None if args.all else args.sources
+        outputs = run_downloads(settings, selected)
+        for source_id, paths in outputs.items():
+            print(f"[{source_id}]")
+            _print_paths(paths)
+        return
+
+    if args.command == "assemble-country-year":
+        output_path = assemble_country_year_covariates(settings.raw_dir, settings.processed_dir)
+        print(output_path)
+        return
+
+    parser.error(f"Unsupported command: {args.command}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,70 @@
+# World Migration Gravity Data
+
+Repository scaffold for the first step of a global gravity model of migration flows: reproducible data acquisition.
+
+## Baseline scope
+
+This repo is set up for a standard bilateral country-to-country gravity model with:
+
+- Dependent variable: 5-year bilateral migration flows from Abel-Cohen, 1990-1995 through 2015-2020.
+- Country covariates: annual World Bank indicators from 1990-2024.
+- Bilateral controls: CEPII gravity variables such as distance, contiguity, common language, and colonial links.
+- Network control: UN DESA migrant stock by origin-destination, 1990-2024.
+
+## Variables included in the acquisition design
+
+### Core outcome
+
+- `flow_ijt`: bilateral migration flows, five-year periods, 1990-1995 to 2015-2020.
+
+### Country covariates
+
+- `population_total`: World Bank `SP.POP.TOTL`, 1990-2024.
+- `gdp_pc_ppp_constant`: World Bank `NY.GDP.PCAP.PP.KD`, 1990-2024.
+- `unemployment_total_pct`: World Bank `SL.UEM.TOTL.ZS`, 1990-2024.
+- `gini_index`: World Bank `SI.POV.GINI`, 1990-2024.
+
+### Bilateral controls
+
+- `distance_km`
+- `contiguity`
+- `common_language`
+- `colonial_tie`
+- `ever_same_country`
+
+### Network control
+
+- `migrant_stock_ijt`: UN DESA destination-origin stock matrix, 1990-2024.
+
+## Sources
+
+- Abel-Cohen bilateral flows: figshare direct file download.
+- World Bank WDI: official V2 API.
+- UN DESA migrant stock: official landing page, with a manual/override hook because file links can change between revisions.
+- CEPII gravity data: official landing page, with a manual/override hook because the public download path is not stable enough to hard-code.
+
+## Repository layout
+
+```text
+config/
+data/
+  raw/
+  interim/
+  processed/
+  logs/
+scripts/
+src/gravity_world/
+```
+
+## Quick start
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -e .
+gravity-data inventory
+gravity-data download --all
+gravity-data assemble-country-year
+```
+
+If UN DESA or CEPII direct links are known later, add them in `config/source_overrides.json` using the template in `config/source_overrides.example.json`.
