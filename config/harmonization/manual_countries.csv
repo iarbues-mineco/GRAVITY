@@ -1,0 +1,10 @@
+canonical_id,canonical_name,iso3,iso2,entity_type,is_current,valid_from,valid_to,notes
+XKX,Kosovo,XKX,XK,country,1,,,Not always represented consistently across statistical sources.
+SUN,Soviet Union,SUN,,legacy_state,0,,1991,Historical entity used in early 1990s bilateral datasets.
+YUG,Yugoslavia,YUG,,legacy_state,0,,2002,Historical entity used in some migration and gravity sources.
+CSK,Czechoslovakia,CSK,,legacy_state,0,,1992,Historical entity used in early 1990s datasets.
+SCG,Serbia and Montenegro,SCG,,legacy_state,0,2003,2006,Legacy state between Yugoslavia and separate SRB or MNE reporting.
+ANT,Netherlands Antilles,ANT,,legacy_territory,0,,2010,Legacy territory code that appears in some historical files.
+TMP,East Timor (legacy code),TMP,,legacy_code,0,,2002,Legacy ISO code that should typically map to TLS for post-independence observations.
+ROM,Romania (legacy code),ROM,,legacy_code,0,,,Legacy code sometimes used instead of ROU.
+ZAR,Zaire,ZAR,,legacy_code,0,,1997,Legacy code that should typically map to COD.

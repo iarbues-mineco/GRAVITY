@@ -1,0 +1,2 @@
+[console_scripts]
+gravity-data = gravity_world.cli:main

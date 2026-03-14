@@ -1,0 +1,26 @@
+source_id,source_code,source_name,canonical_id,match_priority,notes
+world_bank_wdi,XKX,Kosovo,XKX,100,Keep Kosovo explicit if reported separately.
+abel_cohen_flows,TMP,East Timor,TLS,100,Map the legacy code to the modern ISO3 code.
+abel_cohen_flows,ROM,Romania,ROU,100,Map the legacy code to the modern ISO3 code.
+abel_cohen_flows,ZAR,Zaire,COD,100,Map the legacy code to the modern ISO3 code.
+abel_cohen_flows,SUN,Soviet Union,SUN,100,Retain the historical entity as its own canonical record.
+abel_cohen_flows,YUG,Yugoslavia,YUG,100,Retain the historical entity as its own canonical record.
+abel_cohen_flows,CSK,Czechoslovakia,CSK,100,Retain the historical entity as its own canonical record.
+abel_cohen_flows,SCG,Serbia and Montenegro,SCG,100,Retain the historical entity as its own canonical record.
+abel_cohen_flows,ANT,Netherlands Antilles,ANT,100,Retain the historical territory as its own canonical record.
+un_desa_stock,TMP,East Timor,TLS,100,Map the legacy code to the modern ISO3 code.
+un_desa_stock,ROM,Romania,ROU,100,Map the legacy code to the modern ISO3 code.
+un_desa_stock,ZAR,Zaire,COD,100,Map the legacy code to the modern ISO3 code.
+un_desa_stock,SUN,Soviet Union,SUN,100,Retain the historical entity as its own canonical record.
+un_desa_stock,YUG,Yugoslavia,YUG,100,Retain the historical entity as its own canonical record.
+un_desa_stock,CSK,Czechoslovakia,CSK,100,Retain the historical entity as its own canonical record.
+un_desa_stock,SCG,Serbia and Montenegro,SCG,100,Retain the historical entity as its own canonical record.
+un_desa_stock,ANT,Netherlands Antilles,ANT,100,Retain the historical territory as its own canonical record.
+cepii_gravity,TMP,East Timor,TLS,100,Map the legacy code to the modern ISO3 code.
+cepii_gravity,ROM,Romania,ROU,100,Map the legacy code to the modern ISO3 code.
+cepii_gravity,ZAR,Zaire,COD,100,Map the legacy code to the modern ISO3 code.
+cepii_gravity,SUN,Soviet Union,SUN,100,Retain the historical entity as its own canonical record.
+cepii_gravity,YUG,Yugoslavia,YUG,100,Retain the historical entity as its own canonical record.
+cepii_gravity,CSK,Czechoslovakia,CSK,100,Retain the historical entity as its own canonical record.
+cepii_gravity,SCG,Serbia and Montenegro,SCG,100,Retain the historical entity as its own canonical record.
+cepii_gravity,ANT,Netherlands Antilles,ANT,100,Retain the historical territory as its own canonical record.

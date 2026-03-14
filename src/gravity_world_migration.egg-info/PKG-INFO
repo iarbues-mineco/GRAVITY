@@ -1,3 +1,11 @@
+Metadata-Version: 2.4
+Name: gravity-world-migration
+Version: 0.1.0
+Summary: Data acquisition scaffold for a global migration gravity model.
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: pandas>=2.2
+
 # World Migration Gravity Data
 
 Repository scaffold for the first step of a global gravity model of migration flows: reproducible data acquisition.
