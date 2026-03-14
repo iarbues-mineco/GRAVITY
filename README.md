@@ -68,6 +68,7 @@ python -m gravity_world.cli download --source world_bank_wdi
 python -m gravity_world.cli build-country-reference
 python -m gravity_world.cli normalize-abel-cohen
 python -m gravity_world.cli assemble-country-year
+python -m gravity_world.cli assemble-minimal-panel
 ```
 
 If UN DESA or CEPII direct links are known later, add them in `config/source_overrides.json` using the template in `config/source_overrides.example.json`.
@@ -110,4 +111,25 @@ This writes:
 - `data/processed/flows/abel_cohen_unmatched_origins.csv`
 - `data/processed/flows/abel_cohen_unmatched_destinations.csv`
 
-The normalized flow table retains all six published flow-estimation variants and exposes one selected series as the baseline `flow` column.
+The normalized flow table retains all available published flow-estimation variants and exposes one selected series as the baseline `flow` column.
+
+## Minimal panel assembly
+
+Build the first estimation-ready panel with:
+
+```bash
+python -m gravity_world.cli assemble-minimal-panel
+```
+
+This writes:
+
+- `data/processed/panels/bilateral_panel_minimal.csv`
+- `data/processed/panels/bilateral_panel_minimal_dropped_rows.csv`
+
+The minimal panel uses:
+
+- bilateral Abel-Cohen flow
+- start-year origin population and GDP per capita
+- start-year destination population and GDP per capita
+- optional unemployment and Gini columns when available
+- no distance and no migrant stock yet
