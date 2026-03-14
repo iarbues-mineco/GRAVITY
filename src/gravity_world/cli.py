@@ -3,13 +3,17 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from .cartogram import build_latent_country_maps
 from .charts import build_all_country_inflow_comparison
 from .dyadic import normalize_cepii_controls
 from .flows import FLOW_METHOD_COLUMNS, normalize_abel_cohen_flows
 from .harmonize import build_country_reference
+from .latent_geodesic import estimate_latent_geodesic_ppml
 from .model import (
     estimate_cepii_gravity_model,
     estimate_cepii_stock_gravity_model,
+    estimate_cepii_stock_ppml_model,
+    estimate_cepii_stock_unemployment_gravity_model,
     estimate_minimal_gravity_model,
 )
 from .panel import (
@@ -27,6 +31,10 @@ MODEL_PREFIX_CHOICES = [
     "minimal_gravity_ols",
     "cepii_gravity_ols",
     "cepii_stock_gravity_ols",
+    "cepii_stock_unemployment_gravity_ols",
+    "cepii_stock_ppml",
+    "latent_geodesic_ppml",
+    "latent_geodesic_penalized_ppml",
 ]
 
 
@@ -108,6 +116,48 @@ def build_parser() -> argparse.ArgumentParser:
         help="Estimate the CEPII model augmented with lagged bilateral migrant stock.",
     )
     cepii_stock_model_parser.set_defaults(command_name="estimate-cepii-stock-model")
+
+    cepii_stock_unemployment_model_parser = subparsers.add_parser(
+        "estimate-cepii-stock-unemployment-model",
+        help="Estimate the CEPII stock model augmented with origin and destination unemployment rates.",
+    )
+    cepii_stock_unemployment_model_parser.set_defaults(command_name="estimate-cepii-stock-unemployment-model")
+
+    cepii_stock_ppml_model_parser = subparsers.add_parser(
+        "estimate-cepii-stock-ppml-model",
+        help="Estimate the CEPII stock model with PPML on the full nonnegative flow sample.",
+    )
+    cepii_stock_ppml_model_parser.set_defaults(command_name="estimate-cepii-stock-ppml-model")
+
+    latent_geodesic_parser = subparsers.add_parser(
+        "estimate-latent-geodesic-model",
+        help="Estimate an experimental PPML with latent geodesic country coordinates anchored on a user-specified set of fixed countries.",
+    )
+    latent_geodesic_parser.add_argument(
+        "--penalty-weight",
+        type=float,
+        default=0.0,
+        help="Quadratic displacement penalty multiplier toward the real-world reference coordinates. Use 0 for the unpenalized model.",
+    )
+    latent_geodesic_parser.add_argument(
+        "--anchors",
+        nargs="+",
+        default=["ESP", "FRA"],
+        help="ISO3 country codes to keep fixed in the latent map. Provide at least two, for example `--anchors USA CHN`.",
+    )
+    latent_geodesic_parser.set_defaults(command_name="estimate-latent-geodesic-model")
+
+    latent_map_parser = subparsers.add_parser(
+        "plot-latent-country-maps",
+        help="Render country-surface SVG maps for a latent geodesic model: one with countries fixed in place and one with shifted country shapes.",
+    )
+    latent_map_parser.add_argument(
+        "--model-prefix",
+        default="latent_geodesic_ppml",
+        choices=["latent_geodesic_ppml", "latent_geodesic_penalized_ppml"],
+        help="Latent model output prefix to visualize.",
+    )
+    latent_map_parser.set_defaults(command_name="plot-latent-country-maps")
 
     chart_parser = subparsers.add_parser(
         "plot-inflow-comparison",
@@ -209,8 +259,28 @@ def main() -> None:
         _print_paths(output_paths)
         return
 
+    if args.command == "estimate-cepii-stock-unemployment-model":
+        output_paths = estimate_cepii_stock_unemployment_gravity_model(settings)
+        _print_paths(output_paths)
+        return
+
+    if args.command == "estimate-cepii-stock-ppml-model":
+        output_paths = estimate_cepii_stock_ppml_model(settings)
+        _print_paths(output_paths)
+        return
+
+    if args.command == "estimate-latent-geodesic-model":
+        output_paths = estimate_latent_geodesic_ppml(settings, penalty_weight=args.penalty_weight, anchors=args.anchors)
+        _print_paths(output_paths)
+        return
+
     if args.command == "plot-inflow-comparison":
         output_paths = build_all_country_inflow_comparison(settings, model_prefix=args.model_prefix, scale=args.scale)
+        _print_paths(output_paths)
+        return
+
+    if args.command == "plot-latent-country-maps":
+        output_paths = build_latent_country_maps(settings, model_prefix=args.model_prefix)
         _print_paths(output_paths)
         return
 

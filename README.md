@@ -181,6 +181,46 @@ Estimate the stock-augmented model with:
 python -m gravity_world.cli estimate-cepii-stock-model
 ```
 
+Estimate the stock model plus origin and destination unemployment with:
+
+```bash
+python -m gravity_world.cli estimate-cepii-stock-unemployment-model
+```
+
+Estimate the stock model with PPML on the full nonnegative flow sample with:
+
+```bash
+python -m gravity_world.cli estimate-cepii-stock-ppml-model
+```
+
+Estimate the experimental latent geodesic PPML with the default anchors (`ESP FRA`) with:
+
+```bash
+python -m gravity_world.cli estimate-latent-geodesic-model
+```
+
+To change the fixed countries, pass ISO3 codes after `--anchors`. For example, to fix the United States and China and let Spain move:
+
+```bash
+python -m gravity_world.cli estimate-latent-geodesic-model --anchors USA CHN
+```
+
+To add a quadratic penalty that keeps countries closer to their real-world coordinates, use:
+
+```bash
+python -m gravity_world.cli estimate-latent-geodesic-model --anchors USA CHN --penalty-weight 1.0
+```
+
+The penalty is applied to squared chord displacement from the World Bank reference map, scaled so values around `0.25` to `2.0` are a reasonable first range to try.
+
+To render country-surface maps from the latent coordinates, use:
+
+```bash
+python -m gravity_world.cli plot-latent-country-maps --model-prefix latent_geodesic_ppml
+```
+
+This writes two SVGs: one that keeps countries in place and draws centroid arrows to their displaced positions, and one that shifts each country shape by its latent displacement vector.
+
 Main outputs:
 
 - `data/processed/panels/bilateral_panel_cepii.csv`
