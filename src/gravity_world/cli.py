@@ -7,11 +7,27 @@ from .charts import build_all_country_inflow_comparison
 from .dyadic import normalize_cepii_controls
 from .flows import FLOW_METHOD_COLUMNS, normalize_abel_cohen_flows
 from .harmonize import build_country_reference
-from .model import estimate_cepii_gravity_model, estimate_minimal_gravity_model
-from .panel import assemble_cepii_bilateral_panel, assemble_minimal_bilateral_panel
+from .model import (
+    estimate_cepii_gravity_model,
+    estimate_cepii_stock_gravity_model,
+    estimate_minimal_gravity_model,
+)
+from .panel import (
+    assemble_cepii_bilateral_panel,
+    assemble_cepii_stock_bilateral_panel,
+    assemble_minimal_bilateral_panel,
+)
 from .pipeline import inventory, run_downloads
 from .settings import Settings
+from .stock import normalize_un_desa_stock
 from .transform import assemble_country_year_covariates
+
+
+MODEL_PREFIX_CHOICES = [
+    "minimal_gravity_ols",
+    "cepii_gravity_ols",
+    "cepii_stock_gravity_ols",
+]
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -45,6 +61,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     flows_parser.set_defaults(command_name="normalize-abel-cohen")
 
+    stock_parser = subparsers.add_parser(
+        "normalize-un-desa-stock",
+        help="Normalize the UN DESA destination-origin migrant stock workbook into a long bilateral stock table.",
+    )
+    stock_parser.set_defaults(command_name="normalize-un-desa-stock")
+
     cepii_parser = subparsers.add_parser(
         "normalize-cepii",
         help="Normalize CEPII GeoDist bilateral controls into a harmonized dyadic table.",
@@ -63,6 +85,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     cepii_panel_parser.set_defaults(command_name="assemble-cepii-panel")
 
+    cepii_stock_panel_parser = subparsers.add_parser(
+        "assemble-cepii-stock-panel",
+        help="Assemble the CEPII panel with lagged UN DESA bilateral migrant stock added at the period start year.",
+    )
+    cepii_stock_panel_parser.set_defaults(command_name="assemble-cepii-stock-panel")
+
     model_parser = subparsers.add_parser(
         "estimate-minimal-model",
         help="Estimate a baseline log-linear gravity model and write summary outputs.",
@@ -75,6 +103,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     cepii_model_parser.set_defaults(command_name="estimate-cepii-model")
 
+    cepii_stock_model_parser = subparsers.add_parser(
+        "estimate-cepii-stock-model",
+        help="Estimate the CEPII model augmented with lagged bilateral migrant stock.",
+    )
+    cepii_stock_model_parser.set_defaults(command_name="estimate-cepii-stock-model")
+
     chart_parser = subparsers.add_parser(
         "plot-inflow-comparison",
         help="Build an all-country observed vs fitted inflow comparison chart for a model output.",
@@ -82,7 +116,7 @@ def build_parser() -> argparse.ArgumentParser:
     chart_parser.add_argument(
         "--model-prefix",
         default="cepii_gravity_ols",
-        choices=["minimal_gravity_ols", "cepii_gravity_ols"],
+        choices=MODEL_PREFIX_CHOICES,
         help="Model output prefix to plot.",
     )
     chart_parser.add_argument(
@@ -135,6 +169,11 @@ def main() -> None:
         _print_paths(output_paths)
         return
 
+    if args.command == "normalize-un-desa-stock":
+        output_paths = normalize_un_desa_stock(settings)
+        _print_paths(output_paths)
+        return
+
     if args.command == "normalize-cepii":
         output_paths = normalize_cepii_controls(settings)
         _print_paths(output_paths)
@@ -150,6 +189,11 @@ def main() -> None:
         _print_paths(output_paths)
         return
 
+    if args.command == "assemble-cepii-stock-panel":
+        output_paths = assemble_cepii_stock_bilateral_panel(settings)
+        _print_paths(output_paths)
+        return
+
     if args.command == "estimate-minimal-model":
         output_paths = estimate_minimal_gravity_model(settings)
         _print_paths(output_paths)
@@ -157,6 +201,11 @@ def main() -> None:
 
     if args.command == "estimate-cepii-model":
         output_paths = estimate_cepii_gravity_model(settings)
+        _print_paths(output_paths)
+        return
+
+    if args.command == "estimate-cepii-stock-model":
+        output_paths = estimate_cepii_stock_gravity_model(settings)
         _print_paths(output_paths)
         return
 

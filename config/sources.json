@@ -56,7 +56,9 @@
       "output_subdir": "un_desa_stock",
       "expected_filenames": [
         "ims_2024_destination_origin.xlsx",
-        "undesa_migrant_stock_2024_destination_origin.xlsx"
+        "undesa_migrant_stock_2024_destination_origin.xlsx",
+        "international_migrant_stock_2024_destination_and_origin.xlsx",
+        "International Migrant Stock 2024 Destination and origin.xlsx"
       ],
       "notes": "The public file URL may change across revisions. Add a direct URL in config/source_overrides.json or place the workbook manually in this folder."
     },

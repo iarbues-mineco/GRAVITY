@@ -37,6 +37,13 @@ This repo is set up for a standard bilateral country-to-country gravity model wi
 - `col45`
 - `smctry`
 
+### Network control
+
+- `migrant_stock_both_sexes`: UN DESA bilateral migrant stock at mid-year.
+- `migrant_stock_male`
+- `migrant_stock_female`
+- `ln_migrant_stock_both_sexes_plus1`: `log(1 + migrant_stock_both_sexes)`.
+
 ## Quick start
 
 ```bash
@@ -48,10 +55,15 @@ python -m gravity_world.cli build-country-reference
 python -m gravity_world.cli normalize-abel-cohen
 python -m gravity_world.cli assemble-country-year
 python -m gravity_world.cli assemble-minimal-panel
-python -m gravity_world.cli estimate-minimal-model
 python -m gravity_world.cli normalize-cepii
 python -m gravity_world.cli assemble-cepii-panel
-python -m gravity_world.cli estimate-cepii-model
+```
+
+If you want the migrant-stock extension too, place the UN DESA `Destination and origin` workbook in `data/raw/un_desa_stock/` and run:
+
+```bash
+python -m gravity_world.cli normalize-un-desa-stock
+python -m gravity_world.cli assemble-cepii-stock-panel
 ```
 
 ## Country harmonization
@@ -127,7 +139,23 @@ This writes:
 - `data/processed/dyadic/cepii_unmatched_origins.csv`
 - `data/processed/dyadic/cepii_unmatched_destinations.csv`
 
-## CEPII panel and model
+## UN DESA migrant stock
+
+Place the UN DESA `Destination and origin` workbook in `data/raw/un_desa_stock/`, then run:
+
+```bash
+python -m gravity_world.cli normalize-un-desa-stock
+```
+
+If you keep several UN DESA workbooks in that folder, the normalizer will automatically prefer the one whose filename contains both `destination` and `origin`.
+
+This writes:
+
+- `data/processed/stocks/bilateral_migrant_stock_un_desa.csv`
+- `data/processed/stocks/un_desa_stock_unmatched_origins.csv`
+- `data/processed/stocks/un_desa_stock_unmatched_destinations.csv`
+
+## CEPII panel and models
 
 Build the CEPII-extended panel with:
 
@@ -141,10 +169,23 @@ Estimate the extended model with:
 python -m gravity_world.cli estimate-cepii-model
 ```
 
+Build the CEPII plus migrant stock panel with:
+
+```bash
+python -m gravity_world.cli assemble-cepii-stock-panel
+```
+
+Estimate the stock-augmented model with:
+
+```bash
+python -m gravity_world.cli estimate-cepii-stock-model
+```
+
 Main outputs:
 
 - `data/processed/panels/bilateral_panel_cepii.csv`
+- `data/processed/panels/bilateral_panel_cepii_stock.csv`
 - `data/processed/models/cepii_gravity_ols_summary.txt`
-- `data/processed/models/cepii_gravity_ols_spain_totals.csv`
+- `data/processed/models/cepii_stock_gravity_ols_summary.txt`
 
-The CEPII model adds bilateral distance and standard dyadic indicators to the mass-only benchmark.
+The CEPII model adds bilateral distance and standard dyadic indicators to the mass-only benchmark. The stock model adds lagged bilateral migrant stock at the period start year.

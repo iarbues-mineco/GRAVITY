@@ -37,6 +37,11 @@ CEPII_FEATURE_COLUMNS = [
     "smctry",
 ]
 
+CEPII_STOCK_FEATURE_COLUMNS = [
+    *CEPII_FEATURE_COLUMNS,
+    "ln_migrant_stock_both_sexes_plus1",
+]
+
 DEFAULT_COMPARISON_COUNTRIES = ["ESP", "USA", "ITA", "FRA", "DEU"]
 
 
@@ -520,3 +525,22 @@ def estimate_cepii_gravity_model(settings: Settings, output_dir: Path | None = N
     output_dir = output_dir or settings.processed_dir / "models"
     output_dir.mkdir(parents=True, exist_ok=True)
     return _estimate_model(panel, CEPII_FEATURE_COLUMNS, "CEPII Gravity OLS", "cepii_gravity_ols", output_dir)
+
+
+def estimate_cepii_stock_gravity_model(settings: Settings, output_dir: Path | None = None) -> list[Path]:
+    pd = _require_pandas()
+    panel_path = settings.processed_dir / "panels" / "bilateral_panel_cepii_stock.csv"
+    if not panel_path.exists():
+        raise FileNotFoundError(
+            "CEPII stock panel is missing. Run `python -m gravity_world.cli assemble-cepii-stock-panel` first."
+        )
+    panel = pd.read_csv(panel_path)
+    output_dir = output_dir or settings.processed_dir / "models"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    return _estimate_model(
+        panel,
+        CEPII_STOCK_FEATURE_COLUMNS,
+        "CEPII Gravity OLS With Migrant Stock",
+        "cepii_stock_gravity_ols",
+        output_dir,
+    )

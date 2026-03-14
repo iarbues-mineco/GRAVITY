@@ -49,6 +49,15 @@ REQUIRED_DYADIC_COLUMNS = [
     "smctry",
 ]
 
+REQUIRED_STOCK_COLUMNS = [
+    "stock_year",
+    "origin_canonical_id",
+    "destination_canonical_id",
+    "migrant_stock_both_sexes",
+    "migrant_stock_male",
+    "migrant_stock_female",
+]
+
 
 def _require_pandas():
     try:
@@ -127,6 +136,10 @@ def _add_log_columns(frame):
         positive_mask = values > 0
         logged.loc[positive_mask] = np.log(values.loc[positive_mask])
         frame[f"ln_{column}"] = logged
+
+    if "migrant_stock_both_sexes" in frame.columns:
+        stock = frame["migrant_stock_both_sexes"].astype(float)
+        frame["ln_migrant_stock_both_sexes_plus1"] = np.log1p(stock.clip(lower=0))
     return frame
 
 
@@ -309,5 +322,91 @@ def assemble_cepii_bilateral_panel(settings: Settings, output_dir: Path | None =
     ).reset_index(drop=True)
 
     extended_panel.to_csv(panel_path, index=False)
+    dropped_rows.to_csv(dropped_path, index=False)
+    return [panel_path, dropped_path]
+
+
+def assemble_cepii_stock_bilateral_panel(settings: Settings, output_dir: Path | None = None) -> list[Path]:
+    pd = _require_pandas()
+
+    cepii_panel_path = settings.processed_dir / "panels" / "bilateral_panel_cepii.csv"
+    stock_path = settings.processed_dir / "stocks" / "bilateral_migrant_stock_un_desa.csv"
+
+    if not cepii_panel_path.exists():
+        raise FileNotFoundError(
+            "CEPII panel is missing. Run `python -m gravity_world.cli assemble-cepii-panel` first."
+        )
+    if not stock_path.exists():
+        raise FileNotFoundError(
+            "UN DESA stock file is missing. Run `python -m gravity_world.cli normalize-un-desa-stock` first."
+        )
+
+    cepii_panel = pd.read_csv(cepii_panel_path)
+    stock = pd.read_csv(stock_path)
+    _validate_columns(stock, REQUIRED_STOCK_COLUMNS, "UN DESA bilateral stock file")
+
+    stock = stock.copy()
+    stock["stock_year"] = pd.to_numeric(stock["stock_year"], errors="coerce").astype("Int64")
+    stock = stock.rename(columns={"stock_year": "period_start_year"})
+    stock = stock.drop_duplicates(
+        subset=["period_start_year", "origin_canonical_id", "destination_canonical_id"],
+        keep="first",
+    )
+
+    stock_columns = [
+        "period_start_year",
+        "origin_canonical_id",
+        "destination_canonical_id",
+        "stock_reference",
+        "stock_unit",
+        "migrant_stock_both_sexes",
+        "migrant_stock_male",
+        "migrant_stock_female",
+    ]
+    merged = cepii_panel.merge(
+        stock[stock_columns],
+        on=["period_start_year", "origin_canonical_id", "destination_canonical_id"],
+        how="left",
+    )
+
+    merged["stock_drop_reason"] = ""
+    missing_stock_mask = merged["migrant_stock_both_sexes"].isna()
+    merged.loc[missing_stock_mask, "stock_drop_reason"] = "missing_un_desa_stock"
+
+    stock_panel = merged.loc[merged["stock_drop_reason"].eq("")].copy()
+    stock_panel = _add_log_columns(stock_panel)
+
+    output_dir = output_dir or settings.processed_dir / "panels"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    panel_path = output_dir / "bilateral_panel_cepii_stock.csv"
+    dropped_path = output_dir / "bilateral_panel_cepii_stock_dropped_rows.csv"
+
+    panel_columns = list(cepii_panel.columns) + [
+        "stock_reference",
+        "stock_unit",
+        "migrant_stock_both_sexes",
+        "migrant_stock_male",
+        "migrant_stock_female",
+        "ln_migrant_stock_both_sexes_plus1",
+    ]
+    stock_panel = stock_panel[panel_columns].sort_values(
+        ["period_start_year", "origin_canonical_id", "destination_canonical_id"]
+    ).reset_index(drop=True)
+
+    dropped_columns = [
+        "period_start_year",
+        "origin_canonical_id",
+        "destination_canonical_id",
+        "flow",
+        "flow_total_period",
+        "stock_drop_reason",
+    ]
+    dropped_rows = merged.loc[merged["stock_drop_reason"].ne(""), dropped_columns].copy()
+    dropped_rows = dropped_rows.sort_values(
+        ["period_start_year", "origin_canonical_id", "destination_canonical_id"]
+    ).reset_index(drop=True)
+
+    stock_panel.to_csv(panel_path, index=False)
     dropped_rows.to_csv(dropped_path, index=False)
     return [panel_path, dropped_path]
