@@ -63,10 +63,11 @@ src/gravity_world/
 python -m venv .venv
 .venv\Scripts\activate
 pip install -e .
-gravity-data inventory
-gravity-data download --all
-gravity-data build-country-reference
-gravity-data assemble-country-year
+python -m gravity_world.cli inventory
+python -m gravity_world.cli download --source world_bank_wdi
+python -m gravity_world.cli build-country-reference
+python -m gravity_world.cli normalize-abel-cohen
+python -m gravity_world.cli assemble-country-year
 ```
 
 If UN DESA or CEPII direct links are known later, add them in `config/source_overrides.json` using the template in `config/source_overrides.example.json`.
@@ -81,10 +82,32 @@ The first normalization layer lives in `config/harmonization/`:
 After downloading World Bank metadata, build the canonical reference with:
 
 ```bash
-gravity-data build-country-reference
+python -m gravity_world.cli build-country-reference
 ```
 
 This writes:
 
 - `data/processed/reference/country_reference.csv`
 - `data/processed/reference/source_country_overrides.csv`
+
+## Abel-Cohen flow normalization
+
+After downloading the raw Abel-Cohen flow file, normalize it with:
+
+```bash
+python -m gravity_world.cli normalize-abel-cohen
+```
+
+Optional:
+
+```bash
+python -m gravity_world.cli normalize-abel-cohen --preferred-flow da_pb_closed
+```
+
+This writes:
+
+- `data/processed/flows/bilateral_flows_5y_abel_cohen.csv`
+- `data/processed/flows/abel_cohen_unmatched_origins.csv`
+- `data/processed/flows/abel_cohen_unmatched_destinations.csv`
+
+The normalized flow table retains all six published flow-estimation variants and exposes one selected series as the baseline `flow` column.

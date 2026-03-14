@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from .flows import FLOW_METHOD_COLUMNS, normalize_abel_cohen_flows
 from .harmonize import build_country_reference
 from .pipeline import inventory, run_downloads
 from .settings import Settings
@@ -27,6 +28,18 @@ def build_parser() -> argparse.ArgumentParser:
         help="Build the canonical country reference and source override tables.",
     )
     harmonize_parser.set_defaults(command_name="build-country-reference")
+
+    flows_parser = subparsers.add_parser(
+        "normalize-abel-cohen",
+        help="Normalize the Abel-Cohen bilateral flow file into a standard 5-year dyadic table.",
+    )
+    flows_parser.add_argument(
+        "--preferred-flow",
+        choices=FLOW_METHOD_COLUMNS,
+        default="da_pb_closed",
+        help="Flow estimate column to expose as the default `flow` variable.",
+    )
+    flows_parser.set_defaults(command_name="normalize-abel-cohen")
 
     assemble_parser = subparsers.add_parser(
         "assemble-country-year",
@@ -62,6 +75,11 @@ def main() -> None:
 
     if args.command == "build-country-reference":
         output_paths = build_country_reference(settings)
+        _print_paths(output_paths)
+        return
+
+    if args.command == "normalize-abel-cohen":
+        output_paths = normalize_abel_cohen_flows(settings, preferred_flow=args.preferred_flow)
         _print_paths(output_paths)
         return
 
