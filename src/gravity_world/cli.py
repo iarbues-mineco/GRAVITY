@@ -5,6 +5,7 @@ from pathlib import Path
 
 from .flows import FLOW_METHOD_COLUMNS, normalize_abel_cohen_flows
 from .harmonize import build_country_reference
+from .model import estimate_minimal_gravity_model
 from .panel import assemble_minimal_bilateral_panel
 from .pipeline import inventory, run_downloads
 from .settings import Settings
@@ -47,6 +48,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Assemble a minimal bilateral estimation panel with start-year origin and destination covariates.",
     )
     panel_parser.set_defaults(command_name="assemble-minimal-panel")
+
+    model_parser = subparsers.add_parser(
+        "estimate-minimal-model",
+        help="Estimate a baseline log-linear gravity model and write summary outputs.",
+    )
+    model_parser.set_defaults(command_name="estimate-minimal-model")
 
     assemble_parser = subparsers.add_parser(
         "assemble-country-year",
@@ -92,6 +99,11 @@ def main() -> None:
 
     if args.command == "assemble-minimal-panel":
         output_paths = assemble_minimal_bilateral_panel(settings)
+        _print_paths(output_paths)
+        return
+
+    if args.command == "estimate-minimal-model":
+        output_paths = estimate_minimal_gravity_model(settings)
         _print_paths(output_paths)
         return
 

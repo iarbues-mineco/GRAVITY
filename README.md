@@ -69,6 +69,7 @@ python -m gravity_world.cli build-country-reference
 python -m gravity_world.cli normalize-abel-cohen
 python -m gravity_world.cli assemble-country-year
 python -m gravity_world.cli assemble-minimal-panel
+python -m gravity_world.cli estimate-minimal-model
 ```
 
 If UN DESA or CEPII direct links are known later, add them in `config/source_overrides.json` using the template in `config/source_overrides.example.json`.
@@ -133,3 +134,22 @@ The minimal panel uses:
 - start-year destination population and GDP per capita
 - optional unemployment and Gini columns when available
 - no distance and no migrant stock yet
+
+## Baseline model output
+
+Estimate the first simple gravity model with:
+
+```bash
+python -m gravity_world.cli estimate-minimal-model
+```
+
+This writes:
+
+- `data/processed/models/minimal_gravity_ols_summary.txt`
+- `data/processed/models/minimal_gravity_ols_coefficients.csv`
+- `data/processed/models/minimal_gravity_ols_fit_stats.json`
+- `data/processed/models/minimal_gravity_ols_fitted_sample.csv`
+- `data/processed/models/minimal_gravity_ols_spain_totals.csv`
+- `data/processed/models/minimal_gravity_ols_spain_by_period.csv`
+
+The model is a simple log-linear OLS benchmark on positive flows with period dummies. Fitted flow levels are back-transformed using a smearing correction.

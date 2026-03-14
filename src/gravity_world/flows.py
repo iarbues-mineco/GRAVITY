@@ -111,11 +111,15 @@ def normalize_abel_cohen_flows(
     working["source_dataset"] = "abel_cohen_flows"
     working["period_start_year"] = pd.to_numeric(working["year0"], errors="coerce").astype("Int64")
     working["period_end_year"] = working["period_start_year"] + 5
+    working["period_length_years"] = (working["period_end_year"] - working["period_start_year"]).astype("Int64")
     working["period_label"] = working["period_start_year"].astype("string") + "-" + working["period_end_year"].astype("string")
     working = working.rename(columns={"orig": "origin_code_raw", "dest": "destination_code_raw"})
 
+    working["flow_total_period"] = pd.to_numeric(frame[preferred_flow], errors="coerce")
+    period_length = working["period_length_years"].astype(float)
+
     for column in available_flow_columns:
-        working[column] = pd.to_numeric(working[column], errors="coerce")
+        working[column] = pd.to_numeric(working[column], errors="coerce") / period_length
     for column in FLOW_METHOD_COLUMNS:
         if column not in working.columns:
             working[column] = pd.NA
@@ -128,6 +132,8 @@ def normalize_abel_cohen_flows(
     normalized["is_self_flow"] = normalized["origin_canonical_id"].eq(normalized["destination_canonical_id"])
     normalized["flow"] = normalized[preferred_flow]
     normalized["flow_measure"] = preferred_flow
+    normalized["flow_unit"] = "annualized_per_year"
+    normalized["flow_total_period_unit"] = "period_total"
 
     output_dir = output_dir or settings.processed_dir / "flows"
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -140,6 +146,7 @@ def normalize_abel_cohen_flows(
         "source_dataset",
         "period_start_year",
         "period_end_year",
+        "period_length_years",
         "period_label",
         "origin_code_raw",
         "origin_canonical_id",
@@ -156,8 +163,11 @@ def normalize_abel_cohen_flows(
         "destination_is_current",
         "destination_match_method",
         *FLOW_METHOD_COLUMNS,
+        "flow_total_period",
+        "flow_total_period_unit",
         "flow",
         "flow_measure",
+        "flow_unit",
         "is_self_flow",
     ]
     normalized = normalized[output_columns].sort_values(

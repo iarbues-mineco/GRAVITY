@@ -8,6 +8,7 @@ from .settings import Settings
 REQUIRED_FLOW_COLUMNS = [
     "period_start_year",
     "period_end_year",
+    "period_length_years",
     "period_label",
     "origin_canonical_id",
     "origin_iso3",
@@ -16,7 +17,9 @@ REQUIRED_FLOW_COLUMNS = [
     "destination_iso3",
     "destination_name",
     "flow",
+    "flow_total_period",
     "flow_measure",
+    "flow_unit",
     "is_self_flow",
 ]
 
@@ -28,11 +31,6 @@ REQUIRED_COVARIATE_COLUMNS = [
     "gdp_pc_ppp_constant",
     "unemployment_total_pct",
     "gini_index",
-]
-
-MINIMAL_REQUIRED_COVARIATES = [
-    "population_total",
-    "gdp_pc_ppp_constant",
 ]
 
 
@@ -155,6 +153,7 @@ def assemble_minimal_bilateral_panel(settings: Settings, output_dir: Path | None
         "source_dataset",
         "period_start_year",
         "period_end_year",
+        "period_length_years",
         "period_label",
         "covariate_year",
         "origin_canonical_id",
@@ -164,7 +163,9 @@ def assemble_minimal_bilateral_panel(settings: Settings, output_dir: Path | None
         "destination_iso3",
         "destination_name",
         "flow",
+        "flow_total_period",
         "flow_measure",
+        "flow_unit",
         "origin_population_total",
         "destination_population_total",
         "origin_gdp_pc_ppp_constant",
@@ -187,12 +188,14 @@ def assemble_minimal_bilateral_panel(settings: Settings, output_dir: Path | None
         "source_dataset",
         "period_start_year",
         "period_end_year",
+        "period_length_years",
         "period_label",
         "origin_code_raw",
         "origin_canonical_id",
         "destination_code_raw",
         "destination_canonical_id",
         "flow",
+        "flow_total_period",
         "drop_reason",
     ]
     dropped_rows = merged.loc[merged["drop_reason"].ne(""), dropped_columns].copy()
