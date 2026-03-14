@@ -187,5 +187,6 @@ Main outputs:
 - `data/processed/panels/bilateral_panel_cepii_stock.csv`
 - `data/processed/models/cepii_gravity_ols_summary.txt`
 - `data/processed/models/cepii_stock_gravity_ols_summary.txt`
+- `output/summary.md`
 
-The CEPII model adds bilateral distance and standard dyadic indicators to the mass-only benchmark. The stock model adds lagged bilateral migrant stock at the period start year.
+The CEPII model adds bilateral distance and standard dyadic indicators to the mass-only benchmark. The stock model adds lagged bilateral migrant stock at the period start year. The root `output/` folder is the curated user-facing location for the current model summary.

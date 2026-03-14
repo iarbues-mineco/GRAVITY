@@ -369,9 +369,46 @@ def assemble_cepii_stock_bilateral_panel(settings: Settings, output_dir: Path | 
         how="left",
     )
 
+    origin_availability = (
+        stock[["period_start_year", "origin_canonical_id"]]
+        .dropna()
+        .drop_duplicates()
+        .assign(origin_present_in_un_desa=1)
+    )
+    destination_availability = (
+        stock[["period_start_year", "destination_canonical_id"]]
+        .dropna()
+        .drop_duplicates()
+        .assign(destination_present_in_un_desa=1)
+    )
+    merged = merged.merge(origin_availability, on=["period_start_year", "origin_canonical_id"], how="left")
+    merged = merged.merge(destination_availability, on=["period_start_year", "destination_canonical_id"], how="left")
+
+    implicit_zero_mask = (
+        merged["migrant_stock_both_sexes"].isna()
+        & merged["origin_present_in_un_desa"].eq(1)
+        & merged["destination_present_in_un_desa"].eq(1)
+    )
+    merged.loc[implicit_zero_mask, "migrant_stock_both_sexes"] = 0.0
+    merged.loc[implicit_zero_mask, "migrant_stock_male"] = 0.0
+    merged.loc[implicit_zero_mask, "migrant_stock_female"] = 0.0
+    merged.loc[implicit_zero_mask, "stock_reference"] = "implicit_zero_not_listed"
+    merged.loc[implicit_zero_mask, "stock_unit"] = "persons"
+
     merged["stock_drop_reason"] = ""
-    missing_stock_mask = merged["migrant_stock_both_sexes"].isna()
-    merged.loc[missing_stock_mask, "stock_drop_reason"] = "missing_un_desa_stock"
+    unresolved_mask = merged["migrant_stock_both_sexes"].isna()
+    merged.loc[
+        unresolved_mask & merged["origin_present_in_un_desa"].ne(1) & merged["destination_present_in_un_desa"].ne(1),
+        "stock_drop_reason",
+    ] = "unresolved_un_desa_origin_and_destination"
+    merged.loc[
+        unresolved_mask & merged["stock_drop_reason"].eq("") & merged["origin_present_in_un_desa"].ne(1),
+        "stock_drop_reason",
+    ] = "unresolved_un_desa_origin"
+    merged.loc[
+        unresolved_mask & merged["stock_drop_reason"].eq("") & merged["destination_present_in_un_desa"].ne(1),
+        "stock_drop_reason",
+    ] = "unresolved_un_desa_destination"
 
     stock_panel = merged.loc[merged["stock_drop_reason"].eq("")].copy()
     stock_panel = _add_log_columns(stock_panel)

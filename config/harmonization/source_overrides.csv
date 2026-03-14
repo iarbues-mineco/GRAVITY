@@ -24,3 +24,30 @@ cepii_gravity,YUG,Yugoslavia,YUG,100,Retain the historical entity as its own can
 cepii_gravity,CSK,Czechoslovakia,CSK,100,Retain the historical entity as its own canonical record.
 cepii_gravity,SCG,Serbia and Montenegro,SCG,100,Retain the historical entity as its own canonical record.
 cepii_gravity,ANT,Netherlands Antilles,ANT,100,Retain the historical territory as its own canonical record.
+un_desa_stock,68,Bolivia (Plurinational State of),BOL,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,180,Democratic Republic of the Congo,COD,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,270,Gambia,GMB,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,275,State of Palestine,PSE,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,344,"China, Hong Kong SAR",HKG,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,364,Iran (Islamic Republic of),IRN,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,384,Cote d'Ivoire,CIV,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,408,Dem. People's Republic of Korea,PRK,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,410,Republic of Korea,KOR,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,498,Republic of Moldova,MDA,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,531,Curacao,CUW,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,630,Puerto Rico,PRI,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,662,Saint Lucia,LCA,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,703,Slovakia,SVK,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,706,Somalia,SOM,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,792,Turkiye,TUR,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,818,Egypt,EGY,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,834,United Republic of Tanzania,TZA,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,840,United States of America,USA,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,862,Venezuela (Bolivarian Republic of),VEN,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,44,Bahamas,BHS,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,178,Congo,COG,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,417,Kyrgyzstan,KGZ,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,418,Lao People's Democratic Republic,LAO,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,583,Micronesia (Fed. States of),FSM,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,659,Saint Kitts and Nevis,KNA,100,Map the UN DESA numeric location code to the modern ISO3 code.
+un_desa_stock,670,Saint Vincent and the Grenadines,VCT,100,Map the UN DESA numeric location code to the modern ISO3 code.

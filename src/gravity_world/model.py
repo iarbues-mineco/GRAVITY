@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 from statistics import NormalDist
 
@@ -43,6 +44,7 @@ CEPII_STOCK_FEATURE_COLUMNS = [
 ]
 
 DEFAULT_COMPARISON_COUNTRIES = ["ESP", "USA", "ITA", "FRA", "DEU"]
+CURATED_OUTPUT_SUMMARY_NAME = "summary.md"
 
 
 class _NormalApprox:
@@ -141,6 +143,13 @@ def _build_country_comparison(estimation, country_codes: list[str]):
                 "fitted_total_avg_annual_mean_smearing": (
                     fitted_inflow_total_period_mean_smearing + fitted_outflow_total_period_mean_smearing
                 ) / total_years,
+                "observed_balance_avg_annual": (observed_inflow_total_period - observed_outflow_total_period) / total_years,
+                "fitted_balance_avg_annual_median": (
+                    fitted_inflow_total_period_median - fitted_outflow_total_period_median
+                ) / total_years,
+                "fitted_balance_avg_annual_mean_smearing": (
+                    fitted_inflow_total_period_mean_smearing - fitted_outflow_total_period_mean_smearing
+                ) / total_years,
                 "observed_inflow_total_period": observed_inflow_total_period,
                 "fitted_inflow_total_period_median": fitted_inflow_total_period_median,
                 "fitted_inflow_total_period_mean_smearing": fitted_inflow_total_period_mean_smearing,
@@ -151,6 +160,11 @@ def _build_country_comparison(estimation, country_codes: list[str]):
                 "fitted_total_period_median": fitted_inflow_total_period_median + fitted_outflow_total_period_median,
                 "fitted_total_period_mean_smearing": (
                     fitted_inflow_total_period_mean_smearing + fitted_outflow_total_period_mean_smearing
+                ),
+                "observed_balance_total_period": observed_inflow_total_period - observed_outflow_total_period,
+                "fitted_balance_total_period_median": fitted_inflow_total_period_median - fitted_outflow_total_period_median,
+                "fitted_balance_total_period_mean_smearing": (
+                    fitted_inflow_total_period_mean_smearing - fitted_outflow_total_period_mean_smearing
                 ),
             }
         )
@@ -165,6 +179,7 @@ def _write_markdown_summary(
     coefficients,
     country_comparison,
     spain_totals,
+    spain_by_period,
 ) -> None:
     lines = [
         f"# {model_name}",
@@ -206,46 +221,47 @@ def _write_markdown_summary(
             "## Average Annual Flow Comparison Over Full Sample",
             "",
             "These averages are computed as total period flows over all periods divided by the total sample length in years.",
-            "The two fitted columns are:",
-            "- `Median`: `exp(Xb)`",
-            "- `Mean (smearing)`: `exp(Xb) * mean(exp(residual))`",
+            "Fitted values below use the median prediction `exp(Xb)`.",
             "",
-            "| Country | Observed Inflow | Fitted Inflow Median | Fitted Inflow Mean | Observed Outflow | Fitted Outflow Median | Fitted Outflow Mean | Observed Total | Fitted Total Median | Fitted Total Mean |",
-            "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+            "| Country | Observed Inflow | Fitted Inflow Median | Observed Outflow | Fitted Outflow Median | Observed Balance | Fitted Balance Median |",
+            "|---|---:|---:|---:|---:|---:|---:|",
         ]
     )
 
     for row in country_comparison.itertuples(index=False):
         lines.append(
-            f"| {row.country_name} ({row.country_iso3}) | {row.observed_inflow_avg_annual:,.3f} | {row.fitted_inflow_avg_annual_median:,.3f} | {row.fitted_inflow_avg_annual_mean_smearing:,.3f} | {row.observed_outflow_avg_annual:,.3f} | {row.fitted_outflow_avg_annual_median:,.3f} | {row.fitted_outflow_avg_annual_mean_smearing:,.3f} | {row.observed_total_avg_annual:,.3f} | {row.fitted_total_avg_annual_median:,.3f} | {row.fitted_total_avg_annual_mean_smearing:,.3f} |"
+            f"| {row.country_name} ({row.country_iso3}) | {row.observed_inflow_avg_annual:,.3f} | {row.fitted_inflow_avg_annual_median:,.3f} | {row.observed_outflow_avg_annual:,.3f} | {row.fitted_outflow_avg_annual_median:,.3f} | {row.observed_balance_avg_annual:,.3f} | {row.fitted_balance_avg_annual_median:,.3f} |"
         )
 
     lines.extend(
         [
             "",
-            "## Spain Totals",
+            "## Spain By Period",
             "",
-            "| Measure | Value |",
-            "|---|---:|",
-            f"| Observed inflow, average annual | {float(spain_totals.loc[0, 'observed_inflow_avg_annual']):,.3f} |",
-            f"| Fitted inflow, average annual, median | {float(spain_totals.loc[0, 'fitted_inflow_avg_annual_median']):,.3f} |",
-            f"| Fitted inflow, average annual, mean (smearing) | {float(spain_totals.loc[0, 'fitted_inflow_avg_annual_mean_smearing']):,.3f} |",
-            f"| Observed outflow, average annual | {float(spain_totals.loc[0, 'observed_outflow_avg_annual']):,.3f} |",
-            f"| Fitted outflow, average annual, median | {float(spain_totals.loc[0, 'fitted_outflow_avg_annual_median']):,.3f} |",
-            f"| Fitted outflow, average annual, mean (smearing) | {float(spain_totals.loc[0, 'fitted_outflow_avg_annual_mean_smearing']):,.3f} |",
-            f"| Observed total, average annual | {float(spain_totals.loc[0, 'observed_total_avg_annual']):,.3f} |",
-            f"| Fitted total, average annual, median | {float(spain_totals.loc[0, 'fitted_total_avg_annual_median']):,.3f} |",
-            f"| Fitted total, average annual, mean (smearing) | {float(spain_totals.loc[0, 'fitted_total_avg_annual_mean_smearing']):,.3f} |",
-            f"| Observed inflow, all period totals | {float(spain_totals.loc[0, 'observed_inflow_spain_total_period']):,.3f} |",
-            f"| Fitted inflow, all period totals, median | {float(spain_totals.loc[0, 'fitted_inflow_spain_total_period_median']):,.3f} |",
-            f"| Fitted inflow, all period totals, mean (smearing) | {float(spain_totals.loc[0, 'fitted_inflow_spain_total_period_mean_smearing']):,.3f} |",
-            f"| Observed outflow, all period totals | {float(spain_totals.loc[0, 'observed_outflow_spain_total_period']):,.3f} |",
-            f"| Fitted outflow, all period totals, median | {float(spain_totals.loc[0, 'fitted_outflow_spain_total_period_median']):,.3f} |",
-            f"| Fitted outflow, all period totals, mean (smearing) | {float(spain_totals.loc[0, 'fitted_outflow_spain_total_period_mean_smearing']):,.3f} |",
+            "Observed and fitted values below are annualized flows. Fitted values use the median prediction `exp(Xb)`. Balance is `inflow - outflow`.",
+            "",
+            "| Period | Observed Inflow | Fitted Inflow Median | Observed Outflow | Fitted Outflow Median | Observed Balance | Fitted Balance Median |",
+            "|---|---:|---:|---:|---:|---:|---:|",
         ]
     )
 
+    for row in spain_by_period.itertuples(index=False):
+        period_end_year = int(row.period_start_year) + int(row.period_length_years)
+        period_label = f"{int(row.period_start_year)}-{period_end_year}"
+        observed_balance = row.observed_inflow_spain - row.observed_outflow_spain
+        fitted_balance_median = row.fitted_inflow_spain_median - row.fitted_outflow_spain_median
+        lines.append(
+            f"| {period_label} | {row.observed_inflow_spain:,.3f} | {row.fitted_inflow_spain_median:,.3f} | {row.observed_outflow_spain:,.3f} | {row.fitted_outflow_spain_median:,.3f} | {observed_balance:,.3f} | {fitted_balance_median:,.3f} |"
+        )
+
     path.write_text("\n".join(lines), encoding="utf-8")
+
+def _publish_curated_summary(settings: Settings, summary_md_path: Path) -> Path:
+    output_dir = settings.root_dir / "output"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    curated_summary_path = output_dir / CURATED_OUTPUT_SUMMARY_NAME
+    shutil.copyfile(summary_md_path, curated_summary_path)
+    return curated_summary_path
 
 
 def _estimate_model(panel, feature_columns: list[str], model_name: str, output_prefix: str, output_dir: Path) -> list[Path]:
@@ -402,7 +418,7 @@ def _estimate_model(panel, feature_columns: list[str], model_name: str, output_p
                 spain_mask_out, estimation["fitted_flow_total_period_mean_smearing"], 0.0
             ),
         )
-        .groupby("period_start_year", as_index=False)[[
+        .groupby(["period_start_year", "period_length_years"], as_index=False)[[
             "observed_inflow_spain",
             "fitted_inflow_spain_median",
             "fitted_inflow_spain_mean_smearing",
@@ -487,7 +503,7 @@ def _estimate_model(panel, feature_columns: list[str], model_name: str, output_p
         )
     summary_path.write_text("\n".join(summary_lines), encoding="utf-8")
 
-    _write_markdown_summary(summary_md_path, model_name, fit_stats, coefficients, country_comparison, spain_totals)
+    _write_markdown_summary(summary_md_path, model_name, fit_stats, coefficients, country_comparison, spain_totals, spain_by_period)
 
     return [
         summary_path,
@@ -537,10 +553,13 @@ def estimate_cepii_stock_gravity_model(settings: Settings, output_dir: Path | No
     panel = pd.read_csv(panel_path)
     output_dir = output_dir or settings.processed_dir / "models"
     output_dir.mkdir(parents=True, exist_ok=True)
-    return _estimate_model(
+    output_paths = _estimate_model(
         panel,
         CEPII_STOCK_FEATURE_COLUMNS,
         "CEPII Gravity OLS With Migrant Stock",
         "cepii_stock_gravity_ols",
         output_dir,
     )
+    summary_md_path = next(path for path in output_paths if path.name == "cepii_stock_gravity_ols_summary.md")
+    curated_summary_path = _publish_curated_summary(settings, summary_md_path)
+    return [*output_paths, curated_summary_path]
