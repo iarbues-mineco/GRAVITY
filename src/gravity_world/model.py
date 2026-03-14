@@ -106,10 +106,17 @@ def _build_country_comparison(estimation, country_codes: list[str]):
     for code in country_codes:
         inflow_mask = estimation["destination_iso3"].eq(code)
         outflow_mask = estimation["origin_iso3"].eq(code)
+
         observed_inflow_total_period = float(estimation.loc[inflow_mask, "flow_total_period"].sum())
-        fitted_inflow_total_period = float(estimation.loc[inflow_mask, "fitted_flow_total_period"].sum())
+        fitted_inflow_total_period_median = float(estimation.loc[inflow_mask, "fitted_flow_total_period_median"].sum())
+        fitted_inflow_total_period_mean_smearing = float(
+            estimation.loc[inflow_mask, "fitted_flow_total_period_mean_smearing"].sum()
+        )
         observed_outflow_total_period = float(estimation.loc[outflow_mask, "flow_total_period"].sum())
-        fitted_outflow_total_period = float(estimation.loc[outflow_mask, "fitted_flow_total_period"].sum())
+        fitted_outflow_total_period_median = float(estimation.loc[outflow_mask, "fitted_flow_total_period_median"].sum())
+        fitted_outflow_total_period_mean_smearing = float(
+            estimation.loc[outflow_mask, "fitted_flow_total_period_mean_smearing"].sum()
+        )
 
         records.append(
             {
@@ -117,17 +124,29 @@ def _build_country_comparison(estimation, country_codes: list[str]):
                 "country_name": country_names[code],
                 "sample_years": total_years,
                 "observed_inflow_avg_annual": observed_inflow_total_period / total_years,
-                "fitted_inflow_avg_annual": fitted_inflow_total_period / total_years,
+                "fitted_inflow_avg_annual_median": fitted_inflow_total_period_median / total_years,
+                "fitted_inflow_avg_annual_mean_smearing": fitted_inflow_total_period_mean_smearing / total_years,
                 "observed_outflow_avg_annual": observed_outflow_total_period / total_years,
-                "fitted_outflow_avg_annual": fitted_outflow_total_period / total_years,
+                "fitted_outflow_avg_annual_median": fitted_outflow_total_period_median / total_years,
+                "fitted_outflow_avg_annual_mean_smearing": fitted_outflow_total_period_mean_smearing / total_years,
                 "observed_total_avg_annual": (observed_inflow_total_period + observed_outflow_total_period) / total_years,
-                "fitted_total_avg_annual": (fitted_inflow_total_period + fitted_outflow_total_period) / total_years,
+                "fitted_total_avg_annual_median": (
+                    fitted_inflow_total_period_median + fitted_outflow_total_period_median
+                ) / total_years,
+                "fitted_total_avg_annual_mean_smearing": (
+                    fitted_inflow_total_period_mean_smearing + fitted_outflow_total_period_mean_smearing
+                ) / total_years,
                 "observed_inflow_total_period": observed_inflow_total_period,
-                "fitted_inflow_total_period": fitted_inflow_total_period,
+                "fitted_inflow_total_period_median": fitted_inflow_total_period_median,
+                "fitted_inflow_total_period_mean_smearing": fitted_inflow_total_period_mean_smearing,
                 "observed_outflow_total_period": observed_outflow_total_period,
-                "fitted_outflow_total_period": fitted_outflow_total_period,
+                "fitted_outflow_total_period_median": fitted_outflow_total_period_median,
+                "fitted_outflow_total_period_mean_smearing": fitted_outflow_total_period_mean_smearing,
                 "observed_total_period": observed_inflow_total_period + observed_outflow_total_period,
-                "fitted_total_period": fitted_inflow_total_period + fitted_outflow_total_period,
+                "fitted_total_period_median": fitted_inflow_total_period_median + fitted_outflow_total_period_median,
+                "fitted_total_period_mean_smearing": (
+                    fitted_inflow_total_period_mean_smearing + fitted_outflow_total_period_mean_smearing
+                ),
             }
         )
 
@@ -150,6 +169,8 @@ def _write_markdown_summary(
         "| Metric | Value |",
         "|---|---:|",
         f"| Flow unit | {fit_stats['flow_unit']} |",
+        f"| Level prediction (median) | `{fit_stats['median_level_prediction']}` |",
+        f"| Level prediction (mean, smearing) | `{fit_stats['mean_level_prediction_smearing']}` |",
         f"| Observations in panel | {fit_stats['n_obs_total_panel']:,} |",
         f"| Observations used in estimation | {fit_stats['n_obs_estimation_sample']:,} |",
         f"| Zero-flow observations excluded | {fit_stats['n_obs_zero_flow_excluded']:,} |",
@@ -180,15 +201,18 @@ def _write_markdown_summary(
             "## Average Annual Flow Comparison Over Full Sample",
             "",
             "These averages are computed as total period flows over all periods divided by the total sample length in years.",
+            "The two fitted columns are:",
+            "- `Median`: `exp(Xb)`",
+            "- `Mean (smearing)`: `exp(Xb) * mean(exp(residual))`",
             "",
-            "| Country | Observed Inflow | Fitted Inflow | Observed Outflow | Fitted Outflow | Observed Total | Fitted Total |",
-            "|---|---:|---:|---:|---:|---:|---:|",
+            "| Country | Observed Inflow | Fitted Inflow Median | Fitted Inflow Mean | Observed Outflow | Fitted Outflow Median | Fitted Outflow Mean | Observed Total | Fitted Total Median | Fitted Total Mean |",
+            "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
         ]
     )
 
     for row in country_comparison.itertuples(index=False):
         lines.append(
-            f"| {row.country_name} ({row.country_iso3}) | {row.observed_inflow_avg_annual:,.3f} | {row.fitted_inflow_avg_annual:,.3f} | {row.observed_outflow_avg_annual:,.3f} | {row.fitted_outflow_avg_annual:,.3f} | {row.observed_total_avg_annual:,.3f} | {row.fitted_total_avg_annual:,.3f} |"
+            f"| {row.country_name} ({row.country_iso3}) | {row.observed_inflow_avg_annual:,.3f} | {row.fitted_inflow_avg_annual_median:,.3f} | {row.fitted_inflow_avg_annual_mean_smearing:,.3f} | {row.observed_outflow_avg_annual:,.3f} | {row.fitted_outflow_avg_annual_median:,.3f} | {row.fitted_outflow_avg_annual_mean_smearing:,.3f} | {row.observed_total_avg_annual:,.3f} | {row.fitted_total_avg_annual_median:,.3f} | {row.fitted_total_avg_annual_mean_smearing:,.3f} |"
         )
 
     lines.extend(
@@ -199,15 +223,20 @@ def _write_markdown_summary(
             "| Measure | Value |",
             "|---|---:|",
             f"| Observed inflow, average annual | {float(spain_totals.loc[0, 'observed_inflow_avg_annual']):,.3f} |",
-            f"| Fitted inflow, average annual | {float(spain_totals.loc[0, 'fitted_inflow_avg_annual']):,.3f} |",
+            f"| Fitted inflow, average annual, median | {float(spain_totals.loc[0, 'fitted_inflow_avg_annual_median']):,.3f} |",
+            f"| Fitted inflow, average annual, mean (smearing) | {float(spain_totals.loc[0, 'fitted_inflow_avg_annual_mean_smearing']):,.3f} |",
             f"| Observed outflow, average annual | {float(spain_totals.loc[0, 'observed_outflow_avg_annual']):,.3f} |",
-            f"| Fitted outflow, average annual | {float(spain_totals.loc[0, 'fitted_outflow_avg_annual']):,.3f} |",
+            f"| Fitted outflow, average annual, median | {float(spain_totals.loc[0, 'fitted_outflow_avg_annual_median']):,.3f} |",
+            f"| Fitted outflow, average annual, mean (smearing) | {float(spain_totals.loc[0, 'fitted_outflow_avg_annual_mean_smearing']):,.3f} |",
             f"| Observed total, average annual | {float(spain_totals.loc[0, 'observed_total_avg_annual']):,.3f} |",
-            f"| Fitted total, average annual | {float(spain_totals.loc[0, 'fitted_total_avg_annual']):,.3f} |",
+            f"| Fitted total, average annual, median | {float(spain_totals.loc[0, 'fitted_total_avg_annual_median']):,.3f} |",
+            f"| Fitted total, average annual, mean (smearing) | {float(spain_totals.loc[0, 'fitted_total_avg_annual_mean_smearing']):,.3f} |",
             f"| Observed inflow, all period totals | {float(spain_totals.loc[0, 'observed_inflow_spain_total_period']):,.3f} |",
-            f"| Fitted inflow, all period totals | {float(spain_totals.loc[0, 'fitted_inflow_spain_total_period']):,.3f} |",
+            f"| Fitted inflow, all period totals, median | {float(spain_totals.loc[0, 'fitted_inflow_spain_total_period_median']):,.3f} |",
+            f"| Fitted inflow, all period totals, mean (smearing) | {float(spain_totals.loc[0, 'fitted_inflow_spain_total_period_mean_smearing']):,.3f} |",
             f"| Observed outflow, all period totals | {float(spain_totals.loc[0, 'observed_outflow_spain_total_period']):,.3f} |",
-            f"| Fitted outflow, all period totals | {float(spain_totals.loc[0, 'fitted_outflow_spain_total_period']):,.3f} |",
+            f"| Fitted outflow, all period totals, median | {float(spain_totals.loc[0, 'fitted_outflow_spain_total_period_median']):,.3f} |",
+            f"| Fitted outflow, all period totals, mean (smearing) | {float(spain_totals.loc[0, 'fitted_outflow_spain_total_period_mean_smearing']):,.3f} |",
         ]
     )
 
@@ -265,13 +294,20 @@ def _estimate_model(panel, feature_columns: list[str], model_name: str, output_p
     bic = float(np.log(n_obs) * n_params - 2 * log_likelihood) if log_likelihood == log_likelihood else float("nan")
 
     smearing_factor = float(np.exp(residuals).mean())
-    fitted_flow = np.exp(fitted_ln) * smearing_factor
-    fitted_flow_total_period = fitted_flow * estimation["period_length_years"].astype(float).to_numpy()
+    fitted_flow_median = np.exp(fitted_ln)
+    fitted_flow_mean_smearing = fitted_flow_median * smearing_factor
+    period_lengths = estimation["period_length_years"].astype(float).to_numpy()
+    fitted_flow_total_period_median = fitted_flow_median * period_lengths
+    fitted_flow_total_period_mean_smearing = fitted_flow_mean_smearing * period_lengths
 
     estimation["fitted_ln_flow"] = fitted_ln
     estimation["residual_ln_flow"] = residuals
-    estimation["fitted_flow"] = fitted_flow
-    estimation["fitted_flow_total_period"] = fitted_flow_total_period
+    estimation["fitted_flow_median"] = fitted_flow_median
+    estimation["fitted_flow_total_period_median"] = fitted_flow_total_period_median
+    estimation["fitted_flow_mean_smearing"] = fitted_flow_mean_smearing
+    estimation["fitted_flow_total_period_mean_smearing"] = fitted_flow_total_period_mean_smearing
+    estimation["fitted_flow"] = fitted_flow_mean_smearing
+    estimation["fitted_flow_total_period"] = fitted_flow_total_period_mean_smearing
 
     coefficients = pd.DataFrame(
         {
@@ -289,7 +325,8 @@ def _estimate_model(panel, feature_columns: list[str], model_name: str, output_p
         "model": model_name,
         "dependent_variable": "ln_flow",
         "flow_unit": str(estimation["flow_unit"].iloc[0]),
-        "level_prediction": "exp(fitted_ln_flow) * smearing_factor",
+        "median_level_prediction": "exp(fitted_ln_flow)",
+        "mean_level_prediction_smearing": "exp(fitted_ln_flow) * smearing_factor",
         "n_obs_total_panel": int(len(panel)),
         "n_obs_estimation_sample": n_obs,
         "n_obs_zero_flow_excluded": int((panel["flow"] <= 0).sum()),
@@ -313,17 +350,23 @@ def _estimate_model(panel, feature_columns: list[str], model_name: str, output_p
     spain_totals = spain_totals.rename(
         columns={
             "observed_inflow_avg_annual": "observed_inflow_avg_annual",
-            "fitted_inflow_avg_annual": "fitted_inflow_avg_annual",
+            "fitted_inflow_avg_annual_median": "fitted_inflow_avg_annual_median",
+            "fitted_inflow_avg_annual_mean_smearing": "fitted_inflow_avg_annual_mean_smearing",
             "observed_outflow_avg_annual": "observed_outflow_avg_annual",
-            "fitted_outflow_avg_annual": "fitted_outflow_avg_annual",
+            "fitted_outflow_avg_annual_median": "fitted_outflow_avg_annual_median",
+            "fitted_outflow_avg_annual_mean_smearing": "fitted_outflow_avg_annual_mean_smearing",
             "observed_total_avg_annual": "observed_total_avg_annual",
-            "fitted_total_avg_annual": "fitted_total_avg_annual",
+            "fitted_total_avg_annual_median": "fitted_total_avg_annual_median",
+            "fitted_total_avg_annual_mean_smearing": "fitted_total_avg_annual_mean_smearing",
             "observed_inflow_total_period": "observed_inflow_spain_total_period",
-            "fitted_inflow_total_period": "fitted_inflow_spain_total_period",
+            "fitted_inflow_total_period_median": "fitted_inflow_spain_total_period_median",
+            "fitted_inflow_total_period_mean_smearing": "fitted_inflow_spain_total_period_mean_smearing",
             "observed_outflow_total_period": "observed_outflow_spain_total_period",
-            "fitted_outflow_total_period": "fitted_outflow_spain_total_period",
+            "fitted_outflow_total_period_median": "fitted_outflow_spain_total_period_median",
+            "fitted_outflow_total_period_mean_smearing": "fitted_outflow_spain_total_period_mean_smearing",
             "observed_total_period": "observed_total_spain_total_period",
-            "fitted_total_period": "fitted_total_spain_total_period",
+            "fitted_total_period_median": "fitted_total_spain_total_period_median",
+            "fitted_total_period_mean_smearing": "fitted_total_spain_total_period_mean_smearing",
         }
     )
     spain_totals.insert(0, "scope", "average_annual_over_full_sample")
@@ -334,31 +377,61 @@ def _estimate_model(panel, feature_columns: list[str], model_name: str, output_p
     spain_by_period = (
         estimation.assign(
             observed_inflow_spain=np.where(spain_mask_in, estimation["flow"], 0.0),
-            fitted_inflow_spain=np.where(spain_mask_in, estimation["fitted_flow"], 0.0),
+            fitted_inflow_spain_median=np.where(spain_mask_in, estimation["fitted_flow_median"], 0.0),
+            fitted_inflow_spain_mean_smearing=np.where(spain_mask_in, estimation["fitted_flow_mean_smearing"], 0.0),
             observed_outflow_spain=np.where(spain_mask_out, estimation["flow"], 0.0),
-            fitted_outflow_spain=np.where(spain_mask_out, estimation["fitted_flow"], 0.0),
+            fitted_outflow_spain_median=np.where(spain_mask_out, estimation["fitted_flow_median"], 0.0),
+            fitted_outflow_spain_mean_smearing=np.where(spain_mask_out, estimation["fitted_flow_mean_smearing"], 0.0),
             observed_inflow_spain_total_period=np.where(spain_mask_in, estimation["flow_total_period"], 0.0),
-            fitted_inflow_spain_total_period=np.where(spain_mask_in, estimation["fitted_flow_total_period"], 0.0),
+            fitted_inflow_spain_total_period_median=np.where(
+                spain_mask_in, estimation["fitted_flow_total_period_median"], 0.0
+            ),
+            fitted_inflow_spain_total_period_mean_smearing=np.where(
+                spain_mask_in, estimation["fitted_flow_total_period_mean_smearing"], 0.0
+            ),
             observed_outflow_spain_total_period=np.where(spain_mask_out, estimation["flow_total_period"], 0.0),
-            fitted_outflow_spain_total_period=np.where(spain_mask_out, estimation["fitted_flow_total_period"], 0.0),
+            fitted_outflow_spain_total_period_median=np.where(
+                spain_mask_out, estimation["fitted_flow_total_period_median"], 0.0
+            ),
+            fitted_outflow_spain_total_period_mean_smearing=np.where(
+                spain_mask_out, estimation["fitted_flow_total_period_mean_smearing"], 0.0
+            ),
         )
         .groupby("period_start_year", as_index=False)[[
             "observed_inflow_spain",
-            "fitted_inflow_spain",
+            "fitted_inflow_spain_median",
+            "fitted_inflow_spain_mean_smearing",
             "observed_outflow_spain",
-            "fitted_outflow_spain",
+            "fitted_outflow_spain_median",
+            "fitted_outflow_spain_mean_smearing",
             "observed_inflow_spain_total_period",
-            "fitted_inflow_spain_total_period",
+            "fitted_inflow_spain_total_period_median",
+            "fitted_inflow_spain_total_period_mean_smearing",
             "observed_outflow_spain_total_period",
-            "fitted_outflow_spain_total_period",
+            "fitted_outflow_spain_total_period_median",
+            "fitted_outflow_spain_total_period_mean_smearing",
         ]]
         .sum()
     )
     spain_by_period["flow_unit"] = str(estimation["flow_unit"].iloc[0])
     spain_by_period["observed_total_spain"] = spain_by_period["observed_inflow_spain"] + spain_by_period["observed_outflow_spain"]
-    spain_by_period["fitted_total_spain"] = spain_by_period["fitted_inflow_spain"] + spain_by_period["fitted_outflow_spain"]
-    spain_by_period["observed_total_spain_total_period"] = spain_by_period["observed_inflow_spain_total_period"] + spain_by_period["observed_outflow_spain_total_period"]
-    spain_by_period["fitted_total_spain_total_period"] = spain_by_period["fitted_inflow_spain_total_period"] + spain_by_period["fitted_outflow_spain_total_period"]
+    spain_by_period["fitted_total_spain_median"] = (
+        spain_by_period["fitted_inflow_spain_median"] + spain_by_period["fitted_outflow_spain_median"]
+    )
+    spain_by_period["fitted_total_spain_mean_smearing"] = (
+        spain_by_period["fitted_inflow_spain_mean_smearing"] + spain_by_period["fitted_outflow_spain_mean_smearing"]
+    )
+    spain_by_period["observed_total_spain_total_period"] = (
+        spain_by_period["observed_inflow_spain_total_period"] + spain_by_period["observed_outflow_spain_total_period"]
+    )
+    spain_by_period["fitted_total_spain_total_period_median"] = (
+        spain_by_period["fitted_inflow_spain_total_period_median"]
+        + spain_by_period["fitted_outflow_spain_total_period_median"]
+    )
+    spain_by_period["fitted_total_spain_total_period_mean_smearing"] = (
+        spain_by_period["fitted_inflow_spain_total_period_mean_smearing"]
+        + spain_by_period["fitted_outflow_spain_total_period_mean_smearing"]
+    )
 
     coefficients_path = output_dir / f"{output_prefix}_coefficients.csv"
     fit_stats_path = output_dir / f"{output_prefix}_fit_stats.json"
@@ -381,6 +454,8 @@ def _estimate_model(panel, feature_columns: list[str], model_name: str, output_p
         "",
         "Dependent variable: ln_flow",
         f"Flow unit in panel and model outputs: {str(estimation['flow_unit'].iloc[0])}",
+        "Level prediction (median): exp(fitted_ln_flow)",
+        "Level prediction (mean, smearing): exp(fitted_ln_flow) * smearing_factor",
         f"Average annual comparison horizon: {fit_stats['sample_years']:.0f} years",
         f"Observations in panel: {len(panel):,}",
         f"Observations used in estimation: {n_obs:,}",
@@ -394,6 +469,9 @@ def _estimate_model(panel, feature_columns: list[str], model_name: str, output_p
         f"AIC: {aic:.3f}",
         f"BIC: {bic:.3f}",
         f"Smearing factor: {smearing_factor:.6f}",
+        f"Mean observed flow in estimation sample: {float(estimation['flow'].mean()):.6f}",
+        f"Mean fitted flow, median prediction: {float(estimation['fitted_flow_median'].mean()):.6f}",
+        f"Mean fitted flow, mean smearing prediction: {float(estimation['fitted_flow_mean_smearing'].mean()):.6f}",
         "",
         "Coefficients:",
         "term,estimate,std_error,t_stat,p_value_normal_approx,ci95_lower,ci95_upper",

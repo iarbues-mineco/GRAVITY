@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from .charts import build_all_country_inflow_comparison
 from .dyadic import normalize_cepii_controls
 from .flows import FLOW_METHOD_COLUMNS, normalize_abel_cohen_flows
 from .harmonize import build_country_reference
@@ -74,6 +75,24 @@ def build_parser() -> argparse.ArgumentParser:
     )
     cepii_model_parser.set_defaults(command_name="estimate-cepii-model")
 
+    chart_parser = subparsers.add_parser(
+        "plot-inflow-comparison",
+        help="Build an all-country observed vs fitted inflow comparison chart for a model output.",
+    )
+    chart_parser.add_argument(
+        "--model-prefix",
+        default="cepii_gravity_ols",
+        choices=["minimal_gravity_ols", "cepii_gravity_ols"],
+        help="Model output prefix to plot.",
+    )
+    chart_parser.add_argument(
+        "--scale",
+        default="linear",
+        choices=["linear", "log"],
+        help="Horizontal axis scaling for the SVG chart.",
+    )
+    chart_parser.set_defaults(command_name="plot-inflow-comparison")
+
     assemble_parser = subparsers.add_parser(
         "assemble-country-year",
         help="Merge downloaded World Bank indicators into a country-year covariate table.",
@@ -138,6 +157,11 @@ def main() -> None:
 
     if args.command == "estimate-cepii-model":
         output_paths = estimate_cepii_gravity_model(settings)
+        _print_paths(output_paths)
+        return
+
+    if args.command == "plot-inflow-comparison":
+        output_paths = build_all_country_inflow_comparison(settings, model_prefix=args.model_prefix, scale=args.scale)
         _print_paths(output_paths)
         return
 
