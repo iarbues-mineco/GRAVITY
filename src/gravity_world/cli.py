@@ -3,10 +3,11 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from .dyadic import normalize_cepii_controls
 from .flows import FLOW_METHOD_COLUMNS, normalize_abel_cohen_flows
 from .harmonize import build_country_reference
-from .model import estimate_minimal_gravity_model
-from .panel import assemble_minimal_bilateral_panel
+from .model import estimate_cepii_gravity_model, estimate_minimal_gravity_model
+from .panel import assemble_cepii_bilateral_panel, assemble_minimal_bilateral_panel
 from .pipeline import inventory, run_downloads
 from .settings import Settings
 from .transform import assemble_country_year_covariates
@@ -43,17 +44,35 @@ def build_parser() -> argparse.ArgumentParser:
     )
     flows_parser.set_defaults(command_name="normalize-abel-cohen")
 
+    cepii_parser = subparsers.add_parser(
+        "normalize-cepii",
+        help="Normalize CEPII GeoDist bilateral controls into a harmonized dyadic table.",
+    )
+    cepii_parser.set_defaults(command_name="normalize-cepii")
+
     panel_parser = subparsers.add_parser(
         "assemble-minimal-panel",
         help="Assemble a minimal bilateral estimation panel with start-year origin and destination covariates.",
     )
     panel_parser.set_defaults(command_name="assemble-minimal-panel")
 
+    cepii_panel_parser = subparsers.add_parser(
+        "assemble-cepii-panel",
+        help="Assemble an extended bilateral panel that adds CEPII distance and dyadic controls.",
+    )
+    cepii_panel_parser.set_defaults(command_name="assemble-cepii-panel")
+
     model_parser = subparsers.add_parser(
         "estimate-minimal-model",
         help="Estimate a baseline log-linear gravity model and write summary outputs.",
     )
     model_parser.set_defaults(command_name="estimate-minimal-model")
+
+    cepii_model_parser = subparsers.add_parser(
+        "estimate-cepii-model",
+        help="Estimate an extended log-linear gravity model with CEPII dyadic controls.",
+    )
+    cepii_model_parser.set_defaults(command_name="estimate-cepii-model")
 
     assemble_parser = subparsers.add_parser(
         "assemble-country-year",
@@ -97,13 +116,28 @@ def main() -> None:
         _print_paths(output_paths)
         return
 
+    if args.command == "normalize-cepii":
+        output_paths = normalize_cepii_controls(settings)
+        _print_paths(output_paths)
+        return
+
     if args.command == "assemble-minimal-panel":
         output_paths = assemble_minimal_bilateral_panel(settings)
         _print_paths(output_paths)
         return
 
+    if args.command == "assemble-cepii-panel":
+        output_paths = assemble_cepii_bilateral_panel(settings)
+        _print_paths(output_paths)
+        return
+
     if args.command == "estimate-minimal-model":
         output_paths = estimate_minimal_gravity_model(settings)
+        _print_paths(output_paths)
+        return
+
+    if args.command == "estimate-cepii-model":
+        output_paths = estimate_cepii_gravity_model(settings)
         _print_paths(output_paths)
         return
 

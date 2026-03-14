@@ -7,26 +7,37 @@ from statistics import NormalDist
 from .settings import Settings
 
 
-REQUIRED_MODEL_COLUMNS = [
+COMMON_REQUIRED_COLUMNS = [
     "period_start_year",
+    "period_length_years",
     "origin_iso3",
+    "origin_name",
     "destination_iso3",
+    "destination_name",
     "flow",
     "flow_total_period",
     "flow_unit",
     "ln_flow",
+]
+
+MINIMAL_FEATURE_COLUMNS = [
     "ln_origin_population_total",
     "ln_destination_population_total",
     "ln_origin_gdp_pc_ppp_constant",
     "ln_destination_gdp_pc_ppp_constant",
 ]
 
-BASE_FEATURE_COLUMNS = [
-    "ln_origin_population_total",
-    "ln_destination_population_total",
-    "ln_origin_gdp_pc_ppp_constant",
-    "ln_destination_gdp_pc_ppp_constant",
+CEPII_FEATURE_COLUMNS = [
+    *MINIMAL_FEATURE_COLUMNS,
+    "ln_distance_km",
+    "contig",
+    "comlang_off",
+    "colony",
+    "col45",
+    "smctry",
 ]
+
+DEFAULT_COMPARISON_COUNTRIES = ["ESP", "USA", "ITA", "FRA", "DEU"]
 
 
 class _NormalApprox:
@@ -49,18 +60,18 @@ def _require_pandas():
     return pd
 
 
-def _validate_columns(frame, required_columns: list[str]) -> None:
+def _validate_columns(frame, required_columns: list[str], dataset_name: str) -> None:
     missing = [column for column in required_columns if column not in frame.columns]
     if missing:
         actual = ", ".join(frame.columns)
         needed = ", ".join(missing)
-        raise ValueError(f"Minimal panel is missing required columns: {needed}. Actual columns: {actual}")
+        raise ValueError(f"{dataset_name} is missing required columns: {needed}. Actual columns: {actual}")
 
 
-def _build_design_matrix(frame):
+def _build_design_matrix(frame, feature_columns: list[str]):
     pd = _require_pandas()
 
-    design = frame[BASE_FEATURE_COLUMNS].copy()
+    design = frame[feature_columns].copy()
     period_dummies = pd.get_dummies(frame["period_start_year"].astype("string"), prefix="period", dtype=float)
     if not period_dummies.empty:
         baseline = sorted(period_dummies.columns)[0]
@@ -70,27 +81,154 @@ def _build_design_matrix(frame):
     return design
 
 
-def estimate_minimal_gravity_model(settings: Settings, output_dir: Path | None = None) -> list[Path]:
+def _extract_country_names(estimation, country_codes: list[str]) -> dict[str, str]:
+    names: dict[str, str] = {}
+    for code in country_codes:
+        name_series = estimation.loc[estimation["origin_iso3"].eq(code), "origin_name"]
+        if name_series.empty:
+            name_series = estimation.loc[estimation["destination_iso3"].eq(code), "destination_name"]
+        names[code] = str(name_series.iloc[0]) if not name_series.empty else code
+    return names
+
+
+def _build_country_comparison(estimation, country_codes: list[str]):
+    pd = _require_pandas()
+
+    unique_periods = (
+        estimation[["period_start_year", "period_length_years"]]
+        .drop_duplicates()
+        .sort_values(["period_start_year"])
+    )
+    total_years = float(unique_periods["period_length_years"].sum())
+    country_names = _extract_country_names(estimation, country_codes)
+
+    records = []
+    for code in country_codes:
+        inflow_mask = estimation["destination_iso3"].eq(code)
+        outflow_mask = estimation["origin_iso3"].eq(code)
+        observed_inflow_total_period = float(estimation.loc[inflow_mask, "flow_total_period"].sum())
+        fitted_inflow_total_period = float(estimation.loc[inflow_mask, "fitted_flow_total_period"].sum())
+        observed_outflow_total_period = float(estimation.loc[outflow_mask, "flow_total_period"].sum())
+        fitted_outflow_total_period = float(estimation.loc[outflow_mask, "fitted_flow_total_period"].sum())
+
+        records.append(
+            {
+                "country_iso3": code,
+                "country_name": country_names[code],
+                "sample_years": total_years,
+                "observed_inflow_avg_annual": observed_inflow_total_period / total_years,
+                "fitted_inflow_avg_annual": fitted_inflow_total_period / total_years,
+                "observed_outflow_avg_annual": observed_outflow_total_period / total_years,
+                "fitted_outflow_avg_annual": fitted_outflow_total_period / total_years,
+                "observed_total_avg_annual": (observed_inflow_total_period + observed_outflow_total_period) / total_years,
+                "fitted_total_avg_annual": (fitted_inflow_total_period + fitted_outflow_total_period) / total_years,
+                "observed_inflow_total_period": observed_inflow_total_period,
+                "fitted_inflow_total_period": fitted_inflow_total_period,
+                "observed_outflow_total_period": observed_outflow_total_period,
+                "fitted_outflow_total_period": fitted_outflow_total_period,
+                "observed_total_period": observed_inflow_total_period + observed_outflow_total_period,
+                "fitted_total_period": fitted_inflow_total_period + fitted_outflow_total_period,
+            }
+        )
+
+    return pd.DataFrame(records)
+
+
+def _write_markdown_summary(
+    path: Path,
+    model_name: str,
+    fit_stats: dict,
+    coefficients,
+    country_comparison,
+    spain_totals,
+) -> None:
+    lines = [
+        f"# {model_name}",
+        "",
+        "## Fit Statistics",
+        "",
+        "| Metric | Value |",
+        "|---|---:|",
+        f"| Flow unit | {fit_stats['flow_unit']} |",
+        f"| Observations in panel | {fit_stats['n_obs_total_panel']:,} |",
+        f"| Observations used in estimation | {fit_stats['n_obs_estimation_sample']:,} |",
+        f"| Zero-flow observations excluded | {fit_stats['n_obs_zero_flow_excluded']:,} |",
+        f"| Parameters | {fit_stats['n_parameters']} |",
+        f"| R-squared | {fit_stats['r_squared']:.6f} |",
+        f"| Adjusted R-squared | {fit_stats['adj_r_squared']:.6f} |",
+        f"| RMSE (ln flow) | {fit_stats['rmse_ln_flow']:.6f} |",
+        f"| Residual std. error | {fit_stats['residual_std_error']:.6f} |",
+        f"| Log-likelihood | {fit_stats['log_likelihood']:.3f} |",
+        f"| AIC | {fit_stats['aic']:.3f} |",
+        f"| BIC | {fit_stats['bic']:.3f} |",
+        f"| Smearing factor | {fit_stats['smearing_factor']:.6f} |",
+        "",
+        "## Coefficients",
+        "",
+        "| Term | Estimate | Std. Error | t-stat | p-value | 95% CI Low | 95% CI High |",
+        "|---|---:|---:|---:|---:|---:|---:|",
+    ]
+
+    for row in coefficients.itertuples(index=False):
+        lines.append(
+            f"| {row.term} | {row.estimate:.6f} | {row.std_error:.6f} | {row.t_stat:.6f} | {row.p_value_normal_approx:.6g} | {row.ci95_lower:.6f} | {row.ci95_upper:.6f} |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Average Annual Flow Comparison Over Full Sample",
+            "",
+            "These averages are computed as total period flows over all periods divided by the total sample length in years.",
+            "",
+            "| Country | Observed Inflow | Fitted Inflow | Observed Outflow | Fitted Outflow | Observed Total | Fitted Total |",
+            "|---|---:|---:|---:|---:|---:|---:|",
+        ]
+    )
+
+    for row in country_comparison.itertuples(index=False):
+        lines.append(
+            f"| {row.country_name} ({row.country_iso3}) | {row.observed_inflow_avg_annual:,.3f} | {row.fitted_inflow_avg_annual:,.3f} | {row.observed_outflow_avg_annual:,.3f} | {row.fitted_outflow_avg_annual:,.3f} | {row.observed_total_avg_annual:,.3f} | {row.fitted_total_avg_annual:,.3f} |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Spain Totals",
+            "",
+            "| Measure | Value |",
+            "|---|---:|",
+            f"| Observed inflow, average annual | {float(spain_totals.loc[0, 'observed_inflow_avg_annual']):,.3f} |",
+            f"| Fitted inflow, average annual | {float(spain_totals.loc[0, 'fitted_inflow_avg_annual']):,.3f} |",
+            f"| Observed outflow, average annual | {float(spain_totals.loc[0, 'observed_outflow_avg_annual']):,.3f} |",
+            f"| Fitted outflow, average annual | {float(spain_totals.loc[0, 'fitted_outflow_avg_annual']):,.3f} |",
+            f"| Observed total, average annual | {float(spain_totals.loc[0, 'observed_total_avg_annual']):,.3f} |",
+            f"| Fitted total, average annual | {float(spain_totals.loc[0, 'fitted_total_avg_annual']):,.3f} |",
+            f"| Observed inflow, all period totals | {float(spain_totals.loc[0, 'observed_inflow_spain_total_period']):,.3f} |",
+            f"| Fitted inflow, all period totals | {float(spain_totals.loc[0, 'fitted_inflow_spain_total_period']):,.3f} |",
+            f"| Observed outflow, all period totals | {float(spain_totals.loc[0, 'observed_outflow_spain_total_period']):,.3f} |",
+            f"| Fitted outflow, all period totals | {float(spain_totals.loc[0, 'fitted_outflow_spain_total_period']):,.3f} |",
+        ]
+    )
+
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def _estimate_model(panel, feature_columns: list[str], model_name: str, output_prefix: str, output_dir: Path) -> list[Path]:
     pd = _require_pandas()
     import numpy as np
 
-    panel_path = settings.processed_dir / "panels" / "bilateral_panel_minimal.csv"
-    if not panel_path.exists():
-        raise FileNotFoundError(
-            "Minimal panel is missing. Run `python -m gravity_world.cli assemble-minimal-panel` first."
-        )
-
-    panel = pd.read_csv(panel_path)
-    _validate_columns(panel, REQUIRED_MODEL_COLUMNS)
+    required_columns = [*COMMON_REQUIRED_COLUMNS, *feature_columns]
+    _validate_columns(panel, required_columns, f"Panel for {model_name}")
 
     estimation = panel.loc[panel["ln_flow"].notna()].copy()
     estimation = estimation.replace([np.inf, -np.inf], np.nan)
-    estimation = estimation.dropna(subset=["ln_flow", *BASE_FEATURE_COLUMNS]).reset_index(drop=True)
+    estimation = estimation.dropna(subset=["ln_flow", *feature_columns]).reset_index(drop=True)
 
     if estimation.empty:
-        raise ValueError("No observations available for estimation after filtering to positive flows and complete regressors.")
+        raise ValueError(f"No observations available for estimation in {model_name} after filtering.")
 
-    X_df = _build_design_matrix(estimation)
+    X_df = _build_design_matrix(estimation, feature_columns)
     y = estimation["ln_flow"].to_numpy(dtype=float)
     X = X_df.to_numpy(dtype=float)
 
@@ -148,7 +286,7 @@ def estimate_minimal_gravity_model(settings: Settings, output_dir: Path | None =
     )
 
     fit_stats = {
-        "model": "minimal_gravity_ols_log_linear",
+        "model": model_name,
         "dependent_variable": "ln_flow",
         "flow_unit": str(estimation["flow_unit"].iloc[0]),
         "level_prediction": "exp(fitted_ln_flow) * smearing_factor",
@@ -166,29 +304,33 @@ def estimate_minimal_gravity_model(settings: Settings, output_dir: Path | None =
         "aic": aic,
         "bic": bic,
         "smearing_factor": smearing_factor,
+        "feature_columns": feature_columns,
+        "sample_years": float(estimation[["period_start_year", "period_length_years"]].drop_duplicates()["period_length_years"].sum()),
     }
+
+    country_comparison = _build_country_comparison(estimation, DEFAULT_COMPARISON_COUNTRIES)
+    spain_totals = country_comparison.loc[country_comparison["country_iso3"].eq("ESP")].copy()
+    spain_totals = spain_totals.rename(
+        columns={
+            "observed_inflow_avg_annual": "observed_inflow_avg_annual",
+            "fitted_inflow_avg_annual": "fitted_inflow_avg_annual",
+            "observed_outflow_avg_annual": "observed_outflow_avg_annual",
+            "fitted_outflow_avg_annual": "fitted_outflow_avg_annual",
+            "observed_total_avg_annual": "observed_total_avg_annual",
+            "fitted_total_avg_annual": "fitted_total_avg_annual",
+            "observed_inflow_total_period": "observed_inflow_spain_total_period",
+            "fitted_inflow_total_period": "fitted_inflow_spain_total_period",
+            "observed_outflow_total_period": "observed_outflow_spain_total_period",
+            "fitted_outflow_total_period": "fitted_outflow_spain_total_period",
+            "observed_total_period": "observed_total_spain_total_period",
+            "fitted_total_period": "fitted_total_spain_total_period",
+        }
+    )
+    spain_totals.insert(0, "scope", "average_annual_over_full_sample")
+    spain_totals.insert(1, "flow_unit", str(estimation["flow_unit"].iloc[0]))
 
     spain_mask_in = estimation["destination_iso3"].eq("ESP")
     spain_mask_out = estimation["origin_iso3"].eq("ESP")
-    spain_totals = pd.DataFrame(
-        [
-            {
-                "scope": "all_periods_sum_of_annualized_flows",
-                "flow_unit": str(estimation["flow_unit"].iloc[0]),
-                "observed_inflow_spain": float(estimation.loc[spain_mask_in, "flow"].sum()),
-                "fitted_inflow_spain": float(estimation.loc[spain_mask_in, "fitted_flow"].sum()),
-                "observed_outflow_spain": float(estimation.loc[spain_mask_out, "flow"].sum()),
-                "fitted_outflow_spain": float(estimation.loc[spain_mask_out, "fitted_flow"].sum()),
-                "observed_total_spain": float(estimation.loc[spain_mask_in | spain_mask_out, "flow"].sum()),
-                "fitted_total_spain": float(estimation.loc[spain_mask_in | spain_mask_out, "fitted_flow"].sum()),
-                "observed_inflow_spain_total_period": float(estimation.loc[spain_mask_in, "flow_total_period"].sum()),
-                "fitted_inflow_spain_total_period": float(estimation.loc[spain_mask_in, "fitted_flow_total_period"].sum()),
-                "observed_outflow_spain_total_period": float(estimation.loc[spain_mask_out, "flow_total_period"].sum()),
-                "fitted_outflow_spain_total_period": float(estimation.loc[spain_mask_out, "fitted_flow_total_period"].sum()),
-            }
-        ]
-    )
-
     spain_by_period = (
         estimation.assign(
             observed_inflow_spain=np.where(spain_mask_in, estimation["flow"], 0.0),
@@ -200,18 +342,16 @@ def estimate_minimal_gravity_model(settings: Settings, output_dir: Path | None =
             observed_outflow_spain_total_period=np.where(spain_mask_out, estimation["flow_total_period"], 0.0),
             fitted_outflow_spain_total_period=np.where(spain_mask_out, estimation["fitted_flow_total_period"], 0.0),
         )
-        .groupby("period_start_year", as_index=False)[
-            [
-                "observed_inflow_spain",
-                "fitted_inflow_spain",
-                "observed_outflow_spain",
-                "fitted_outflow_spain",
-                "observed_inflow_spain_total_period",
-                "fitted_inflow_spain_total_period",
-                "observed_outflow_spain_total_period",
-                "fitted_outflow_spain_total_period",
-            ]
-        ]
+        .groupby("period_start_year", as_index=False)[[
+            "observed_inflow_spain",
+            "fitted_inflow_spain",
+            "observed_outflow_spain",
+            "fitted_outflow_spain",
+            "observed_inflow_spain_total_period",
+            "fitted_inflow_spain_total_period",
+            "observed_outflow_spain_total_period",
+            "fitted_outflow_spain_total_period",
+        ]]
         .sum()
     )
     spain_by_period["flow_unit"] = str(estimation["flow_unit"].iloc[0])
@@ -220,27 +360,28 @@ def estimate_minimal_gravity_model(settings: Settings, output_dir: Path | None =
     spain_by_period["observed_total_spain_total_period"] = spain_by_period["observed_inflow_spain_total_period"] + spain_by_period["observed_outflow_spain_total_period"]
     spain_by_period["fitted_total_spain_total_period"] = spain_by_period["fitted_inflow_spain_total_period"] + spain_by_period["fitted_outflow_spain_total_period"]
 
-    output_dir = output_dir or settings.processed_dir / "models"
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    coefficients_path = output_dir / "minimal_gravity_ols_coefficients.csv"
-    fit_stats_path = output_dir / "minimal_gravity_ols_fit_stats.json"
-    summary_path = output_dir / "minimal_gravity_ols_summary.txt"
-    fitted_sample_path = output_dir / "minimal_gravity_ols_fitted_sample.csv"
-    spain_totals_path = output_dir / "minimal_gravity_ols_spain_totals.csv"
-    spain_period_path = output_dir / "minimal_gravity_ols_spain_by_period.csv"
+    coefficients_path = output_dir / f"{output_prefix}_coefficients.csv"
+    fit_stats_path = output_dir / f"{output_prefix}_fit_stats.json"
+    summary_path = output_dir / f"{output_prefix}_summary.txt"
+    summary_md_path = output_dir / f"{output_prefix}_summary.md"
+    fitted_sample_path = output_dir / f"{output_prefix}_fitted_sample.csv"
+    spain_totals_path = output_dir / f"{output_prefix}_spain_totals.csv"
+    spain_period_path = output_dir / f"{output_prefix}_spain_by_period.csv"
+    country_comparison_path = output_dir / f"{output_prefix}_country_comparison.csv"
 
     coefficients.to_csv(coefficients_path, index=False)
     fit_stats_path.write_text(json.dumps(fit_stats, indent=2), encoding="utf-8")
     estimation.to_csv(fitted_sample_path, index=False)
     spain_totals.to_csv(spain_totals_path, index=False)
     spain_by_period.to_csv(spain_period_path, index=False)
+    country_comparison.to_csv(country_comparison_path, index=False)
 
     summary_lines = [
-        "Minimal Gravity OLS Summary",
+        f"{model_name} Summary",
         "",
-        f"Dependent variable: ln_flow",
+        "Dependent variable: ln_flow",
         f"Flow unit in panel and model outputs: {str(estimation['flow_unit'].iloc[0])}",
+        f"Average annual comparison horizon: {fit_stats['sample_years']:.0f} years",
         f"Observations in panel: {len(panel):,}",
         f"Observations used in estimation: {n_obs:,}",
         f"Zero-flow observations excluded: {int((panel['flow'] <= 0).sum()):,}",
@@ -261,29 +402,43 @@ def estimate_minimal_gravity_model(settings: Settings, output_dir: Path | None =
         summary_lines.append(
             f"{row.term},{row.estimate:.6f},{row.std_error:.6f},{row.t_stat:.6f},{row.p_value_normal_approx:.6g},{row.ci95_lower:.6f},{row.ci95_upper:.6f}"
         )
-    summary_lines.extend(
-        [
-            "",
-            "Spain totals (estimation sample):",
-            f"Observed inflow, annualized: {float(spain_totals.loc[0, 'observed_inflow_spain']):.6f}",
-            f"Fitted inflow, annualized: {float(spain_totals.loc[0, 'fitted_inflow_spain']):.6f}",
-            f"Observed outflow, annualized: {float(spain_totals.loc[0, 'observed_outflow_spain']):.6f}",
-            f"Fitted outflow, annualized: {float(spain_totals.loc[0, 'fitted_outflow_spain']):.6f}",
-            f"Observed total, annualized: {float(spain_totals.loc[0, 'observed_total_spain']):.6f}",
-            f"Fitted total, annualized: {float(spain_totals.loc[0, 'fitted_total_spain']):.6f}",
-            f"Observed inflow, period totals: {float(spain_totals.loc[0, 'observed_inflow_spain_total_period']):.6f}",
-            f"Fitted inflow, period totals: {float(spain_totals.loc[0, 'fitted_inflow_spain_total_period']):.6f}",
-            f"Observed outflow, period totals: {float(spain_totals.loc[0, 'observed_outflow_spain_total_period']):.6f}",
-            f"Fitted outflow, period totals: {float(spain_totals.loc[0, 'fitted_outflow_spain_total_period']):.6f}",
-        ]
-    )
     summary_path.write_text("\n".join(summary_lines), encoding="utf-8")
+
+    _write_markdown_summary(summary_md_path, model_name, fit_stats, coefficients, country_comparison, spain_totals)
 
     return [
         summary_path,
+        summary_md_path,
         coefficients_path,
         fit_stats_path,
         fitted_sample_path,
         spain_totals_path,
         spain_period_path,
+        country_comparison_path,
     ]
+
+
+def estimate_minimal_gravity_model(settings: Settings, output_dir: Path | None = None) -> list[Path]:
+    pd = _require_pandas()
+    panel_path = settings.processed_dir / "panels" / "bilateral_panel_minimal.csv"
+    if not panel_path.exists():
+        raise FileNotFoundError(
+            "Minimal panel is missing. Run `python -m gravity_world.cli assemble-minimal-panel` first."
+        )
+    panel = pd.read_csv(panel_path)
+    output_dir = output_dir or settings.processed_dir / "models"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    return _estimate_model(panel, MINIMAL_FEATURE_COLUMNS, "Minimal Gravity OLS", "minimal_gravity_ols", output_dir)
+
+
+def estimate_cepii_gravity_model(settings: Settings, output_dir: Path | None = None) -> list[Path]:
+    pd = _require_pandas()
+    panel_path = settings.processed_dir / "panels" / "bilateral_panel_cepii.csv"
+    if not panel_path.exists():
+        raise FileNotFoundError(
+            "CEPII panel is missing. Run `python -m gravity_world.cli assemble-cepii-panel` first."
+        )
+    panel = pd.read_csv(panel_path)
+    output_dir = output_dir or settings.processed_dir / "models"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    return _estimate_model(panel, CEPII_FEATURE_COLUMNS, "CEPII Gravity OLS", "cepii_gravity_ols", output_dir)

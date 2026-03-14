@@ -33,6 +33,22 @@ REQUIRED_COVARIATE_COLUMNS = [
     "gini_index",
 ]
 
+REQUIRED_DYADIC_COLUMNS = [
+    "origin_canonical_id",
+    "destination_canonical_id",
+    "distance_measure",
+    "distance_km",
+    "ln_distance_km",
+    "contig",
+    "comlang_off",
+    "comlang_ethno",
+    "colony",
+    "comcol",
+    "curcol",
+    "col45",
+    "smctry",
+]
+
 
 def _require_pandas():
     try:
@@ -72,7 +88,7 @@ def _prefix_covariates(frame, prefix: str):
     return renamed
 
 
-def _derive_drop_reason(frame):
+def _derive_minimal_drop_reason(frame):
     pd = _require_pandas()
 
     def build_reason(row):
@@ -101,7 +117,10 @@ def _add_log_columns(frame):
         "destination_population_total",
         "origin_gdp_pc_ppp_constant",
         "destination_gdp_pc_ppp_constant",
+        "distance_km",
     ]:
+        if column not in frame.columns:
+            continue
         values = frame[column].astype(float)
         logged = values.copy()
         logged[:] = np.nan
@@ -138,7 +157,7 @@ def assemble_minimal_bilateral_panel(settings: Settings, output_dir: Path | None
     merged = flows.merge(origin_covariates, on=["origin_canonical_id", "period_start_year"], how="left")
     merged = merged.merge(destination_covariates, on=["destination_canonical_id", "period_start_year"], how="left")
     merged["covariate_year"] = merged["period_start_year"]
-    merged["drop_reason"] = _derive_drop_reason(merged)
+    merged["drop_reason"] = _derive_minimal_drop_reason(merged)
 
     minimal_panel = merged.loc[merged["drop_reason"].eq("")].copy()
     minimal_panel = _add_log_columns(minimal_panel)
@@ -204,5 +223,91 @@ def assemble_minimal_bilateral_panel(settings: Settings, output_dir: Path | None
     ).reset_index(drop=True)
 
     minimal_panel.to_csv(panel_path, index=False)
+    dropped_rows.to_csv(dropped_path, index=False)
+    return [panel_path, dropped_path]
+
+
+def assemble_cepii_bilateral_panel(settings: Settings, output_dir: Path | None = None) -> list[Path]:
+    pd = _require_pandas()
+
+    minimal_panel_path = settings.processed_dir / "panels" / "bilateral_panel_minimal.csv"
+    dyadic_path = settings.processed_dir / "dyadic" / "cepii_geodist_controls.csv"
+
+    if not minimal_panel_path.exists():
+        raise FileNotFoundError(
+            "Minimal panel is missing. Run `python -m gravity_world.cli assemble-minimal-panel` first."
+        )
+    if not dyadic_path.exists():
+        raise FileNotFoundError(
+            "CEPII dyadic controls are missing. Run `python -m gravity_world.cli normalize-cepii` first."
+        )
+
+    minimal_panel = pd.read_csv(minimal_panel_path)
+    dyadic = pd.read_csv(dyadic_path)
+    _validate_columns(dyadic, REQUIRED_DYADIC_COLUMNS, "CEPII dyadic controls")
+
+    dyadic = dyadic[
+        [
+            "origin_canonical_id",
+            "destination_canonical_id",
+            "distance_measure",
+            "distance_km",
+            "ln_distance_km",
+            "contig",
+            "comlang_off",
+            "comlang_ethno",
+            "colony",
+            "comcol",
+            "curcol",
+            "col45",
+            "smctry",
+        ]
+    ].drop_duplicates(subset=["origin_canonical_id", "destination_canonical_id"], keep="first")
+    merged = minimal_panel.merge(dyadic, on=["origin_canonical_id", "destination_canonical_id"], how="left")
+
+    merged["cepii_drop_reason"] = ""
+    missing_distance_mask = merged["distance_km"].isna()
+    merged.loc[missing_distance_mask, "cepii_drop_reason"] = "missing_cepii_distance"
+
+    extended_panel = merged.loc[merged["cepii_drop_reason"].eq("")].copy()
+    extended_panel = _add_log_columns(extended_panel)
+
+    output_dir = output_dir or settings.processed_dir / "panels"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    panel_path = output_dir / "bilateral_panel_cepii.csv"
+    dropped_path = output_dir / "bilateral_panel_cepii_dropped_rows.csv"
+
+    panel_columns = list(minimal_panel.columns) + [
+        "distance_measure",
+        "distance_km",
+        "ln_distance_km",
+        "contig",
+        "comlang_off",
+        "comlang_ethno",
+        "colony",
+        "comcol",
+        "curcol",
+        "col45",
+        "smctry",
+    ]
+    extended_panel = extended_panel[panel_columns].sort_values(
+        ["period_start_year", "origin_canonical_id", "destination_canonical_id"]
+    ).reset_index(drop=True)
+
+    dropped_columns = [
+        "period_start_year",
+        "origin_canonical_id",
+        "destination_canonical_id",
+        "flow",
+        "flow_total_period",
+        "cepii_drop_reason",
+    ]
+    dropped_rows = merged.loc[merged["cepii_drop_reason"].ne(""), dropped_columns].copy()
+    dropped_rows = dropped_rows.sort_values(
+        ["period_start_year", "origin_canonical_id", "destination_canonical_id"]
+    ).reset_index(drop=True)
+
+    extended_panel.to_csv(panel_path, index=False)
     dropped_rows.to_csv(dropped_path, index=False)
     return [panel_path, dropped_path]

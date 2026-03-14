@@ -6,16 +6,17 @@ Repository scaffold for the first step of a global gravity model of migration fl
 
 This repo is set up for a standard bilateral country-to-country gravity model with:
 
-- Dependent variable: 5-year bilateral migration flows from Abel-Cohen, 1990-1995 through 2015-2020.
+- Dependent variable: annualized bilateral migration flows derived from Abel-Cohen 5-year estimates, 1990-1995 through 2015-2020.
 - Country covariates: annual World Bank indicators from 1990-2024.
-- Bilateral controls: CEPII gravity variables such as distance, contiguity, common language, and colonial links.
+- Bilateral controls: CEPII GeoDist variables such as distance, contiguity, common language, and colonial links.
 - Network control: UN DESA migrant stock by origin-destination, 1990-2024.
 
 ## Variables included in the acquisition design
 
 ### Core outcome
 
-- `flow_ijt`: bilateral migration flows, five-year periods, 1990-1995 to 2015-2020.
+- `flow`: annualized bilateral migration flow, obtained by dividing the 5-year period total by period length.
+- `flow_total_period`: original 5-year bilateral flow estimate for the period.
 
 ### Country covariates
 
@@ -26,36 +27,15 @@ This repo is set up for a standard bilateral country-to-country gravity model wi
 
 ### Bilateral controls
 
-- `distance_km`
-- `contiguity`
-- `common_language`
-- `colonial_tie`
-- `ever_same_country`
-
-### Network control
-
-- `migrant_stock_ijt`: UN DESA destination-origin stock matrix, 1990-2024.
-
-## Sources
-
-- Abel-Cohen bilateral flows: figshare direct file download.
-- World Bank WDI: official V2 API.
-- UN DESA migrant stock: official landing page, with a manual or override hook because file links can change between revisions.
-- CEPII gravity data: official landing page, with a manual or override hook because the public download path is not stable enough to hard-code.
-
-## Repository layout
-
-```text
-config/
-  harmonization/
-data/
-  raw/
-  interim/
-  processed/
-  logs/
-scripts/
-src/gravity_world/
-```
+- `distance_km`: CEPII `distw` population-weighted bilateral distance.
+- `contig`
+- `comlang_off`
+- `comlang_ethno`
+- `colony`
+- `comcol`
+- `curcol`
+- `col45`
+- `smctry`
 
 ## Quick start
 
@@ -63,25 +43,20 @@ src/gravity_world/
 python -m venv .venv
 .venv\Scripts\activate
 pip install -e .
-python -m gravity_world.cli inventory
 python -m gravity_world.cli download --source world_bank_wdi
 python -m gravity_world.cli build-country-reference
 python -m gravity_world.cli normalize-abel-cohen
 python -m gravity_world.cli assemble-country-year
 python -m gravity_world.cli assemble-minimal-panel
 python -m gravity_world.cli estimate-minimal-model
+python -m gravity_world.cli normalize-cepii
+python -m gravity_world.cli assemble-cepii-panel
+python -m gravity_world.cli estimate-cepii-model
 ```
-
-If UN DESA or CEPII direct links are known later, add them in `config/source_overrides.json` using the template in `config/source_overrides.example.json`.
 
 ## Country harmonization
 
-The first normalization layer lives in `config/harmonization/`:
-
-- `manual_countries.csv`: canonical manual additions and historical entities that are not reliably covered by live APIs.
-- `source_overrides.csv`: source-specific code or name remaps for legacy labels and non-standard reporting.
-
-After downloading World Bank metadata, build the canonical reference with:
+Build the canonical reference with:
 
 ```bash
 python -m gravity_world.cli build-country-reference
@@ -94,16 +69,10 @@ This writes:
 
 ## Abel-Cohen flow normalization
 
-After downloading the raw Abel-Cohen flow file, normalize it with:
+Normalize the raw Abel-Cohen flow file with:
 
 ```bash
 python -m gravity_world.cli normalize-abel-cohen
-```
-
-Optional:
-
-```bash
-python -m gravity_world.cli normalize-abel-cohen --preferred-flow da_pb_closed
 ```
 
 This writes:
@@ -112,9 +81,19 @@ This writes:
 - `data/processed/flows/abel_cohen_unmatched_origins.csv`
 - `data/processed/flows/abel_cohen_unmatched_destinations.csv`
 
-The normalized flow table retains all available published flow-estimation variants and exposes one selected series as the baseline `flow` column.
+## Country-year covariates
 
-## Minimal panel assembly
+Build the World Bank country-year table with:
+
+```bash
+python -m gravity_world.cli assemble-country-year
+```
+
+This writes:
+
+- `data/processed/country_year_covariates.csv`
+
+## Minimal panel and model
 
 Build the first estimation-ready panel with:
 
@@ -122,34 +101,50 @@ Build the first estimation-ready panel with:
 python -m gravity_world.cli assemble-minimal-panel
 ```
 
-This writes:
-
-- `data/processed/panels/bilateral_panel_minimal.csv`
-- `data/processed/panels/bilateral_panel_minimal_dropped_rows.csv`
-
-The minimal panel uses:
-
-- bilateral Abel-Cohen flow
-- start-year origin population and GDP per capita
-- start-year destination population and GDP per capita
-- optional unemployment and Gini columns when available
-- no distance and no migrant stock yet
-
-## Baseline model output
-
-Estimate the first simple gravity model with:
+Estimate the baseline mass-only model with:
 
 ```bash
 python -m gravity_world.cli estimate-minimal-model
 ```
 
+Main outputs:
+
+- `data/processed/panels/bilateral_panel_minimal.csv`
+- `data/processed/models/minimal_gravity_ols_summary.txt`
+- `data/processed/models/minimal_gravity_ols_spain_totals.csv`
+
+## CEPII dyadic controls
+
+Place or download `dist_cepii.zip` into `data/raw/cepii/`, then run:
+
+```bash
+python -m gravity_world.cli normalize-cepii
+```
+
 This writes:
 
-- `data/processed/models/minimal_gravity_ols_summary.txt`
-- `data/processed/models/minimal_gravity_ols_coefficients.csv`
-- `data/processed/models/minimal_gravity_ols_fit_stats.json`
-- `data/processed/models/minimal_gravity_ols_fitted_sample.csv`
-- `data/processed/models/minimal_gravity_ols_spain_totals.csv`
-- `data/processed/models/minimal_gravity_ols_spain_by_period.csv`
+- `data/processed/dyadic/cepii_geodist_controls.csv`
+- `data/processed/dyadic/cepii_unmatched_origins.csv`
+- `data/processed/dyadic/cepii_unmatched_destinations.csv`
 
-The model is a simple log-linear OLS benchmark on positive flows with period dummies. Fitted flow levels are back-transformed using a smearing correction.
+## CEPII panel and model
+
+Build the CEPII-extended panel with:
+
+```bash
+python -m gravity_world.cli assemble-cepii-panel
+```
+
+Estimate the extended model with:
+
+```bash
+python -m gravity_world.cli estimate-cepii-model
+```
+
+Main outputs:
+
+- `data/processed/panels/bilateral_panel_cepii.csv`
+- `data/processed/models/cepii_gravity_ols_summary.txt`
+- `data/processed/models/cepii_gravity_ols_spain_totals.csv`
+
+The CEPII model adds bilateral distance and standard dyadic indicators to the mass-only benchmark.
