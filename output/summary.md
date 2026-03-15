@@ -72,3 +72,13 @@ Observed and fitted values below are annualized flows. Fitted values are PPML fi
 | 2005-2010 | 571,463.868 | 440,453.514 | 122,850.870 | 139,968.492 | 448,612.998 | 300,485.022 |
 | 2010-2015 | 213,632.720 | 498,913.695 | 303,163.170 | 151,764.332 | -89,530.450 | 347,149.364 |
 | 2015-2020 | 434,670.814 | 464,035.718 | 221,902.086 | 148,957.098 | 212,768.728 | 315,078.621 |
+
+## Forecasts
+
+These are out-of-sample annualized forecasts built from start-of-period covariates and migrant stocks.
+The presentation period uses inclusive calendar-style labels; the technical model block keeps the project's existing start-to-start convention.
+
+| Presentation Period | Technical Model Block | Covariate Year | Spain Predicted Inflow | Spain Predicted Outflow | Spain Predicted Balance | Rows Used | Rows Dropped |
+|---|---|---:|---:|---:|---:|---:|---:|
+| 2020-2024 | 2020-2025 | 2020 | 611,774.921 | 191,922.704 | 419,852.217 | 36,290 | 0 |
+| 2024-2028 | 2024-2029 | 2024 | 676,110.059 | 202,523.429 | 473,586.630 | 32,580 | 3,710 |

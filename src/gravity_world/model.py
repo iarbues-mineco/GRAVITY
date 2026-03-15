@@ -515,7 +515,245 @@ def _build_country_comparison_ppml(estimation, country_codes: list[str]):
     return pd.DataFrame(records)
 
 
-def _write_markdown_summary_ppml_fe(path: Path, model_name: str, fit_stats: dict, coefficients, country_comparison, spain_by_period) -> None:
+def _get_common_forecast_years(settings: Settings) -> list[int]:
+    pd = _require_pandas()
+
+    covariates_path = settings.processed_dir / "country_year_covariates.csv"
+    stock_path = settings.processed_dir / "stocks" / "bilateral_migrant_stock_un_desa.csv"
+    if not covariates_path.exists():
+        raise FileNotFoundError(
+            "Country-year covariates are missing. Run `python -m gravity_world.cli assemble-country-year` first."
+        )
+    if not stock_path.exists():
+        raise FileNotFoundError(
+            "UN DESA stock file is missing. Run `python -m gravity_world.cli normalize-un-desa-stock` first."
+        )
+
+    covariates = pd.read_csv(covariates_path)
+    stock = pd.read_csv(stock_path)
+    cov_years = set(pd.to_numeric(covariates["year"], errors="coerce").dropna().astype(int).tolist())
+    stock_years = set(pd.to_numeric(stock["stock_year"], errors="coerce").dropna().astype(int).tolist())
+    candidate_years = sorted(cov_years & stock_years)
+    if not candidate_years:
+        raise ValueError("No common forecast year exists between country-year covariates and migrant stocks.")
+    return candidate_years
+
+
+def _build_forward_forecast(
+    settings: Settings,
+    training_panel,
+    countries,
+    origin_fe,
+    destination_fe,
+    beta,
+    term_names: list[str],
+    forecast_start_year: int,
+    presentation_end_year: int | None = None,
+):
+    pd = _require_pandas()
+    np = _require_numpy()
+
+    candidate_years = _get_common_forecast_years(settings)
+    if forecast_start_year not in candidate_years:
+        available = ", ".join(str(year) for year in candidate_years)
+        raise ValueError(
+            f"Forecast start year {forecast_start_year} is not available. Common covariate/stock years: {available}"
+        )
+
+    covariates_path = settings.processed_dir / "country_year_covariates.csv"
+    stock_path = settings.processed_dir / "stocks" / "bilateral_migrant_stock_un_desa.csv"
+    covariates = pd.read_csv(covariates_path)
+    stock = pd.read_csv(stock_path)
+
+    period_length_years = 5
+    technical_end_year = forecast_start_year + period_length_years
+    technical_label = f"{forecast_start_year}-{technical_end_year}"
+    if presentation_end_year is None:
+        presentation_end_year = forecast_start_year + period_length_years - 1
+    presentation_label = f"{forecast_start_year}-{presentation_end_year}"
+
+    covariates_year = covariates.loc[pd.to_numeric(covariates["year"], errors="coerce").eq(forecast_start_year)].copy()
+    covariates_year = covariates_year.drop_duplicates(subset=["country_iso3"], keep="first")
+    origin_cov = covariates_year.rename(
+        columns={
+            "country_iso3": "origin_canonical_id",
+            "population_total": "origin_population_total",
+            "gdp_pc_ppp_constant": "origin_gdp_pc_ppp_constant",
+        }
+    )[["origin_canonical_id", "origin_population_total", "origin_gdp_pc_ppp_constant"]]
+    destination_cov = covariates_year.rename(
+        columns={
+            "country_iso3": "destination_canonical_id",
+            "population_total": "destination_population_total",
+            "gdp_pc_ppp_constant": "destination_gdp_pc_ppp_constant",
+        }
+    )[["destination_canonical_id", "destination_population_total", "destination_gdp_pc_ppp_constant"]]
+
+    dyad_columns = [
+        "origin_canonical_id",
+        "origin_iso3",
+        "origin_name",
+        "destination_canonical_id",
+        "destination_iso3",
+        "destination_name",
+        "distance_measure",
+        "distance_km",
+        "ln_distance_km",
+        "contig",
+        "comlang_off",
+        "comlang_ethno",
+        "colony",
+        "comcol",
+        "curcol",
+        "col45",
+        "smctry",
+    ]
+    template = training_panel[dyad_columns].drop_duplicates(
+        subset=["origin_canonical_id", "destination_canonical_id"],
+        keep="first",
+    ).copy()
+    template["period_start_year"] = forecast_start_year
+    template["period_end_year"] = technical_end_year
+    template["period_length_years"] = period_length_years
+    template["period_label"] = technical_label
+    template["presentation_period_label"] = presentation_label
+    template["covariate_year"] = forecast_start_year
+    template["flow_unit"] = str(training_panel["flow_unit"].iloc[0])
+
+    forecast = template.merge(origin_cov, on="origin_canonical_id", how="left")
+    forecast = forecast.merge(destination_cov, on="destination_canonical_id", how="left")
+
+    stock = stock.copy()
+    stock["stock_year"] = pd.to_numeric(stock["stock_year"], errors="coerce").astype("Int64")
+    stock_year = stock.loc[stock["stock_year"].eq(forecast_start_year)].copy()
+    stock_year = stock_year.rename(columns={"stock_year": "period_start_year"})
+    stock_year = stock_year.drop_duplicates(
+        subset=["period_start_year", "origin_canonical_id", "destination_canonical_id"],
+        keep="first",
+    )
+    stock_columns = [
+        "period_start_year",
+        "origin_canonical_id",
+        "destination_canonical_id",
+        "stock_reference",
+        "stock_unit",
+        "migrant_stock_both_sexes",
+        "migrant_stock_male",
+        "migrant_stock_female",
+    ]
+    forecast = forecast.merge(
+        stock_year[stock_columns],
+        on=["period_start_year", "origin_canonical_id", "destination_canonical_id"],
+        how="left",
+    )
+
+    origin_availability = (
+        stock_year[["period_start_year", "origin_canonical_id"]]
+        .dropna()
+        .drop_duplicates()
+        .assign(origin_present_in_un_desa=1)
+    )
+    destination_availability = (
+        stock_year[["period_start_year", "destination_canonical_id"]]
+        .dropna()
+        .drop_duplicates()
+        .assign(destination_present_in_un_desa=1)
+    )
+    forecast = forecast.merge(origin_availability, on=["period_start_year", "origin_canonical_id"], how="left")
+    forecast = forecast.merge(destination_availability, on=["period_start_year", "destination_canonical_id"], how="left")
+
+    implicit_zero_mask = (
+        forecast["migrant_stock_both_sexes"].isna()
+        & forecast["origin_present_in_un_desa"].eq(1)
+        & forecast["destination_present_in_un_desa"].eq(1)
+    )
+    forecast.loc[implicit_zero_mask, "migrant_stock_both_sexes"] = 0.0
+    forecast.loc[implicit_zero_mask, "migrant_stock_male"] = 0.0
+    forecast.loc[implicit_zero_mask, "migrant_stock_female"] = 0.0
+    forecast.loc[implicit_zero_mask, "stock_reference"] = "implicit_zero_not_listed"
+    forecast.loc[implicit_zero_mask, "stock_unit"] = "persons"
+
+    forecast["forecast_drop_reason"] = ""
+    forecast.loc[
+        forecast["origin_population_total"].isna() | forecast["origin_gdp_pc_ppp_constant"].isna(),
+        "forecast_drop_reason",
+    ] = f"missing_origin_{forecast_start_year}_covariates"
+    forecast.loc[
+        forecast["forecast_drop_reason"].eq("")
+        & (forecast["destination_population_total"].isna() | forecast["destination_gdp_pc_ppp_constant"].isna()),
+        "forecast_drop_reason",
+    ] = f"missing_destination_{forecast_start_year}_covariates"
+    unresolved_stock_mask = forecast["migrant_stock_both_sexes"].isna()
+    forecast.loc[
+        forecast["forecast_drop_reason"].eq("")
+        & unresolved_stock_mask
+        & forecast["origin_present_in_un_desa"].ne(1)
+        & forecast["destination_present_in_un_desa"].ne(1),
+        "forecast_drop_reason",
+    ] = f"unresolved_un_desa_origin_and_destination_{forecast_start_year}"
+    forecast.loc[
+        forecast["forecast_drop_reason"].eq("")
+        & unresolved_stock_mask
+        & forecast["origin_present_in_un_desa"].ne(1),
+        "forecast_drop_reason",
+    ] = f"unresolved_un_desa_origin_{forecast_start_year}"
+    forecast.loc[
+        forecast["forecast_drop_reason"].eq("")
+        & unresolved_stock_mask
+        & forecast["destination_present_in_un_desa"].ne(1),
+        "forecast_drop_reason",
+    ] = f"unresolved_un_desa_destination_{forecast_start_year}"
+
+    valid = forecast.loc[forecast["forecast_drop_reason"].eq("")].copy()
+    valid["ln_origin_population_total"] = np.log(valid["origin_population_total"].astype(float))
+    valid["ln_destination_population_total"] = np.log(valid["destination_population_total"].astype(float))
+    valid["ln_origin_gdp_pc_ppp_constant"] = np.log(valid["origin_gdp_pc_ppp_constant"].astype(float))
+    valid["ln_destination_gdp_pc_ppp_constant"] = np.log(valid["destination_gdp_pc_ppp_constant"].astype(float))
+    valid["ln_migrant_stock_both_sexes_plus1"] = np.log1p(valid["migrant_stock_both_sexes"].astype(float).clip(lower=0))
+
+    design = _build_ppml_fe_design_matrix(valid, CEPII_STOCK_FEATURE_COLUMNS)
+    for term in term_names:
+        if term not in design.columns:
+            design[term] = 0.0
+    design = design[term_names]
+
+    country_lookup = countries.set_index("canonical_id")["country_index"]
+    valid["origin_country_index"] = valid["origin_canonical_id"].map(country_lookup)
+    valid["destination_country_index"] = valid["destination_canonical_id"].map(country_lookup)
+    if valid[["origin_country_index", "destination_country_index"]].isna().any().any():
+        raise ValueError("Forecast panel contains countries not present in the estimated FE model.")
+
+    X = design.to_numpy(dtype=float)
+    origin_idx = valid["origin_country_index"].to_numpy(dtype=int)
+    destination_idx = valid["destination_country_index"].to_numpy(dtype=int)
+    eta = origin_fe[origin_idx] + destination_fe[destination_idx] + X @ beta
+    eta = np.clip(eta, -30.0, 30.0)
+    valid["predicted_flow"] = np.exp(eta)
+    valid["predicted_flow_total_period"] = valid["predicted_flow"] * period_length_years
+
+    spain_inflow = float(valid.loc[valid["destination_iso3"].eq("ESP"), "predicted_flow"].sum())
+    spain_outflow = float(valid.loc[valid["origin_iso3"].eq("ESP"), "predicted_flow"].sum())
+    summary = {
+        "period_label": technical_label,
+        "technical_period_label": technical_label,
+        "presentation_period_label": presentation_label,
+        "forecast_start_year": forecast_start_year,
+        "forecast_end_year": technical_end_year,
+        "forecast_display_end_year": presentation_end_year,
+        "flow_unit": str(training_panel["flow_unit"].iloc[0]),
+        "predicted_inflow_spain": spain_inflow,
+        "predicted_outflow_spain": spain_outflow,
+        "predicted_balance_spain": spain_inflow - spain_outflow,
+        "predicted_inflow_spain_total_period": spain_inflow * period_length_years,
+        "predicted_outflow_spain_total_period": spain_outflow * period_length_years,
+        "predicted_balance_spain_total_period": (spain_inflow - spain_outflow) * period_length_years,
+        "forecast_rows_total": int(len(forecast)),
+        "forecast_rows_used": int(len(valid)),
+        "forecast_rows_dropped": int((forecast["forecast_drop_reason"] != "").sum()),
+    }
+    return valid, forecast.loc[forecast["forecast_drop_reason"].ne("")].copy(), summary
+
+def _write_markdown_summary_ppml_fe(path: Path, model_name: str, fit_stats: dict, coefficients, country_comparison, spain_by_period, forecast_summaries=None) -> None:
     lines = [
         f"# {model_name}",
         "",
@@ -588,8 +826,24 @@ def _write_markdown_summary_ppml_fe(path: Path, model_name: str, fit_stats: dict
         lines.append(
             f"| {period_label} | {row.observed_inflow_spain:,.3f} | {row.fitted_inflow_spain:,.3f} | {row.observed_outflow_spain:,.3f} | {row.fitted_outflow_spain:,.3f} | {observed_balance:,.3f} | {fitted_balance:,.3f} |"
         )
+    if forecast_summaries:
+        lines.extend(
+            [
+                "",
+                "## Forecasts",
+                "",
+                "These are out-of-sample annualized forecasts built from start-of-period covariates and migrant stocks.",
+                "The presentation period uses inclusive calendar-style labels; the technical model block keeps the project's existing start-to-start convention.",
+                "",
+                "| Presentation Period | Technical Model Block | Covariate Year | Spain Predicted Inflow | Spain Predicted Outflow | Spain Predicted Balance | Rows Used | Rows Dropped |",
+                "|---|---|---:|---:|---:|---:|---:|---:|",
+            ]
+        )
+        for summary in forecast_summaries:
+            lines.append(
+                f"| {summary['presentation_period_label']} | {summary['technical_period_label']} | {summary['forecast_start_year']} | {summary['predicted_inflow_spain']:,.3f} | {summary['predicted_outflow_spain']:,.3f} | {summary['predicted_balance_spain']:,.3f} | {summary['forecast_rows_used']:,} | {summary['forecast_rows_dropped']:,} |"
+            )
     path.write_text("\n".join(lines), encoding="utf-8")
-
 
 def _estimate_ppml_country_fe_model(
     settings: Settings,
@@ -792,6 +1046,36 @@ def _estimate_ppml_country_fe_model(
     )
     spain_by_period["flow_unit"] = str(estimation["flow_unit"].iloc[0])
 
+    available_forecast_years = _get_common_forecast_years(settings)
+    requested_forecast_years = []
+    if 2020 in available_forecast_years:
+        requested_forecast_years.append(2020)
+    latest_forecast_year = max(available_forecast_years)
+    if latest_forecast_year not in requested_forecast_years:
+        requested_forecast_years.append(latest_forecast_year)
+
+    forecast_panels = []
+    forecast_dropped_tables = []
+    forecast_summaries = []
+    for forecast_year in requested_forecast_years:
+        forecast_valid, forecast_dropped_rows, forecast_summary = _build_forward_forecast(
+            settings,
+            estimation,
+            countries,
+            origin_fe,
+            destination_fe,
+            beta,
+            list(X_df.columns),
+            forecast_start_year=forecast_year,
+            presentation_end_year=forecast_year + 4,
+        )
+        forecast_panels.append(forecast_valid)
+        forecast_dropped_tables.append(forecast_dropped_rows)
+        forecast_summaries.append(forecast_summary)
+
+    forecast_panel = pd.concat(forecast_panels, ignore_index=True)
+    forecast_dropped = pd.concat(forecast_dropped_tables, ignore_index=True)
+
     coefficients_path = output_dir / f"{output_prefix}_coefficients.csv"
     fit_stats_path = output_dir / f"{output_prefix}_fit_stats.json"
     summary_path = output_dir / f"{output_prefix}_summary.txt"
@@ -802,6 +1086,9 @@ def _estimate_ppml_country_fe_model(
     country_comparison_path = output_dir / f"{output_prefix}_country_comparison.csv"
     origin_effects_path = output_dir / f"{output_prefix}_origin_effects.csv"
     destination_effects_path = output_dir / f"{output_prefix}_destination_effects.csv"
+    forecast_path = output_dir / f"{output_prefix}_forecast.csv"
+    forecast_dropped_path = output_dir / f"{output_prefix}_forecast_dropped_rows.csv"
+    forecast_summary_path = output_dir / f"{output_prefix}_forecast_summary.json"
 
     coefficients.to_csv(coefficients_path, index=False)
     fit_stats_path.write_text(json.dumps(fit_stats, indent=2), encoding="utf-8")
@@ -811,6 +1098,9 @@ def _estimate_ppml_country_fe_model(
     country_comparison.to_csv(country_comparison_path, index=False)
     origin_effects.to_csv(origin_effects_path, index=False)
     destination_effects.to_csv(destination_effects_path, index=False)
+    forecast_panel.to_csv(forecast_path, index=False)
+    forecast_dropped.to_csv(forecast_dropped_path, index=False)
+    forecast_summary_path.write_text(json.dumps({"forecast_blocks": forecast_summaries}, indent=2), encoding="utf-8")
 
     summary_lines = [
         f"{model_name} Summary",
@@ -834,6 +1124,17 @@ def _estimate_ppml_country_fe_model(
         f"Mean observed flow: {fit_stats['mean_observed_flow']:.6f}",
         f"Mean fitted flow: {fit_stats['mean_fitted_flow']:.6f}",
         "",
+        "Forecast blocks:",
+        *[
+            (
+                f"{summary['presentation_period_label']} (technical {summary['technical_period_label']}): "
+                f"inflow={summary['predicted_inflow_spain']:.6f}, "
+                f"outflow={summary['predicted_outflow_spain']:.6f}, "
+                f"balance={summary['predicted_balance_spain']:.6f}"
+            )
+            for summary in forecast_summaries
+        ],
+        "",
         "Slope coefficients:",
         "term,estimate,std_error,z_stat,p_value_normal_approx,ci95_lower,ci95_upper",
     ]
@@ -842,7 +1143,15 @@ def _estimate_ppml_country_fe_model(
             f"{row.term},{row.estimate:.6f},{row.std_error:.6f},{row.z_stat:.6f},{row.p_value_normal_approx:.6g},{row.ci95_lower:.6f},{row.ci95_upper:.6f}"
         )
     summary_path.write_text("\n".join(summary_lines), encoding="utf-8")
-    _write_markdown_summary_ppml_fe(summary_md_path, model_name, fit_stats, coefficients, country_comparison, spain_by_period)
+    _write_markdown_summary_ppml_fe(
+        summary_md_path,
+        model_name,
+        fit_stats,
+        coefficients,
+        country_comparison,
+        spain_by_period,
+        forecast_summaries=forecast_summaries,
+    )
     curated_summary_path = _publish_curated_summary(settings, summary_md_path)
 
     return [
@@ -856,6 +1165,9 @@ def _estimate_ppml_country_fe_model(
         country_comparison_path,
         origin_effects_path,
         destination_effects_path,
+        forecast_path,
+        forecast_dropped_path,
+        forecast_summary_path,
         curated_summary_path,
     ]
 
