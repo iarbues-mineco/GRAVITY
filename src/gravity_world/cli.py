@@ -9,6 +9,7 @@ from .flows import FLOW_METHOD_COLUMNS, normalize_abel_cohen_flows
 from .harmonize import build_country_reference
 from .model import (
     estimate_cepii_gravity_model,
+    estimate_cepii_stock_fe_ppml_model,
     estimate_cepii_stock_gravity_model,
     estimate_minimal_gravity_model,
 )
@@ -27,6 +28,7 @@ MODEL_PREFIX_CHOICES = [
     "minimal_gravity_ols",
     "cepii_gravity_ols",
     "cepii_stock_gravity_ols",
+    "cepii_stock_fe_ppml",
 ]
 
 
@@ -108,6 +110,18 @@ def build_parser() -> argparse.ArgumentParser:
         help="Estimate the CEPII model augmented with lagged bilateral migrant stock.",
     )
     cepii_stock_model_parser.set_defaults(command_name="estimate-cepii-stock-model")
+
+    cepii_stock_fe_ppml_parser = subparsers.add_parser(
+        "estimate-cepii-stock-fe-ppml-model",
+        help="Estimate a regular-distance PPML with static origin and destination fixed effects on the CEPII stock panel.",
+    )
+    cepii_stock_fe_ppml_parser.add_argument(
+        "--progress-every",
+        type=int,
+        default=1,
+        help="Print one progress line every N slope iterations.",
+    )
+    cepii_stock_fe_ppml_parser.set_defaults(command_name="estimate-cepii-stock-fe-ppml-model")
 
     chart_parser = subparsers.add_parser(
         "plot-inflow-comparison",
@@ -206,6 +220,11 @@ def main() -> None:
 
     if args.command == "estimate-cepii-stock-model":
         output_paths = estimate_cepii_stock_gravity_model(settings)
+        _print_paths(output_paths)
+        return
+
+    if args.command == "estimate-cepii-stock-fe-ppml-model":
+        output_paths = estimate_cepii_stock_fe_ppml_model(settings, progress_every=args.progress_every)
         _print_paths(output_paths)
         return
 
