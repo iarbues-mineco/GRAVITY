@@ -1,0 +1,676 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="980" viewBox="0 0 1900 980">
+<rect width="100%" height="100%" fill="#f6f4ed" />
+<style>text { font-family: Segoe UI, Arial, sans-serif; fill: #1f2933; } .title { font-size: 28px; font-weight: 700; } .subtitle { font-size: 14px; fill: #52606d; } .grid { stroke: #d9d5c9; stroke-width: 1; } .ref { fill: #b8bfc6; opacity: 0.8; } .latent { fill: #d94841; opacity: 0.92; } .anchor { fill: #0f4c81; } .label { font-size: 9px; } .legend { font-size: 12px; }</style>
+<text x="60" y="30" class="title">Latent Geodesic Migration Map</text>
+<text x="60" y="48" class="subtitle">Gray = World Bank capital coordinates. Red = latent PPML coordinates. Fixed anchors: USA, CHN.</text>
+<line x1="208.33" y1="50" x2="208.33" y2="930" class="grid" />
+<text x="208.33" y="948" text-anchor="middle" class="legend">-150</text>
+<line x1="356.67" y1="50" x2="356.67" y2="930" class="grid" />
+<text x="356.67" y="948" text-anchor="middle" class="legend">-120</text>
+<line x1="505.00" y1="50" x2="505.00" y2="930" class="grid" />
+<text x="505.00" y="948" text-anchor="middle" class="legend">-90</text>
+<line x1="653.33" y1="50" x2="653.33" y2="930" class="grid" />
+<text x="653.33" y="948" text-anchor="middle" class="legend">-60</text>
+<line x1="801.67" y1="50" x2="801.67" y2="930" class="grid" />
+<text x="801.67" y="948" text-anchor="middle" class="legend">-30</text>
+<line x1="950.00" y1="50" x2="950.00" y2="930" class="grid" />
+<text x="950.00" y="948" text-anchor="middle" class="legend">0</text>
+<line x1="1098.33" y1="50" x2="1098.33" y2="930" class="grid" />
+<text x="1098.33" y="948" text-anchor="middle" class="legend">30</text>
+<line x1="1246.67" y1="50" x2="1246.67" y2="930" class="grid" />
+<text x="1246.67" y="948" text-anchor="middle" class="legend">60</text>
+<line x1="1395.00" y1="50" x2="1395.00" y2="930" class="grid" />
+<text x="1395.00" y="948" text-anchor="middle" class="legend">90</text>
+<line x1="1543.33" y1="50" x2="1543.33" y2="930" class="grid" />
+<text x="1543.33" y="948" text-anchor="middle" class="legend">120</text>
+<line x1="1691.67" y1="50" x2="1691.67" y2="930" class="grid" />
+<text x="1691.67" y="948" text-anchor="middle" class="legend">150</text>
+<line x1="1840.00" y1="50" x2="1840.00" y2="930" class="grid" />
+<text x="1840.00" y="948" text-anchor="middle" class="legend">180</text>
+<line x1="60" y1="783.33" x2="1840" y2="783.33" class="grid" />
+<text x="52" y="787.33" text-anchor="end" class="legend">-60</text>
+<line x1="60" y1="636.67" x2="1840" y2="636.67" class="grid" />
+<text x="52" y="640.67" text-anchor="end" class="legend">-30</text>
+<line x1="60" y1="490.00" x2="1840" y2="490.00" class="grid" />
+<text x="52" y="494.00" text-anchor="end" class="legend">0</text>
+<line x1="60" y1="343.33" x2="1840" y2="343.33" class="grid" />
+<text x="52" y="347.33" text-anchor="end" class="legend">30</text>
+<line x1="60" y1="196.67" x2="1840" y2="196.67" class="grid" />
+<text x="52" y="200.67" text-anchor="end" class="legend">60</text>
+<line x1="60" y1="50.00" x2="1840" y2="50.00" class="grid" />
+<text x="52" y="54.00" text-anchor="end" class="legend">90</text>
+<line x1="603.81" y1="428.81" x2="582.33" y2="297.77" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="603.81" cy="428.81" r="2.2" class="ref" />
+<circle cx="582.33" cy="297.77" r="2.8" class="latent" />
+<line x1="1292.04" y1="321.22" x2="1267.35" y2="315.02" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1292.04" cy="321.22" r="2.2" class="ref" />
+<circle cx="1267.35" cy="315.02" r="2.8" class="latent" />
+<line x1="1015.47" y1="533.08" x2="1065.71" y2="536.57" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1015.47" cy="533.08" r="2.2" class="ref" />
+<circle cx="1065.71" cy="536.57" r="2.8" class="latent" />
+<line x1="1047.99" y1="287.93" x2="1060.23" y2="246.04" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1047.99" cy="287.93" r="2.2" class="ref" />
+<circle cx="1060.23" cy="246.04" r="2.8" class="latent" />
+<line x1="957.52" y1="282.19" x2="1072.23" y2="249.53" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="957.52" cy="282.19" r="2.2" class="ref" />
+<circle cx="1072.23" cy="249.53" r="2.8" class="latent" />
+<line x1="1218.83" y1="370.34" x2="1269.62" y2="312.11" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1218.83" cy="370.34" r="2.2" class="ref" />
+<circle cx="1269.62" cy="312.11" r="2.8" class="latent" />
+<line x1="661.16" y1="659.21" x2="777.59" y2="618.12" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="661.16" cy="659.21" r="2.2" class="ref" />
+<circle cx="777.59" cy="618.12" r="2.8" class="latent" />
+<text x="781.59" y="614.12" class="label">ARG</text>
+<line x1="1170.07" y1="293.66" x2="1140.00" y2="196.42" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1170.07" cy="293.66" r="2.2" class="ref" />
+<circle cx="1140.00" cy="196.42" r="2.8" class="latent" />
+<line x1="644.21" y1="406.31" x2="575.98" y2="295.03" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="644.21" cy="406.31" r="2.2" class="ref" />
+<circle cx="575.98" cy="295.03" r="2.8" class="latent" />
+<line x1="1687.36" y1="662.49" x2="1272.25" y2="321.66" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1687.36" cy="662.49" r="2.2" class="ref" />
+<circle cx="1272.25" cy="321.66" r="2.8" class="latent" />
+<text x="1276.25" y="317.66" class="label">AUS</text>
+<line x1="1030.99" y1="254.26" x2="1085.83" y2="246.78" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1030.99" cy="254.26" r="2.2" class="ref" />
+<circle cx="1085.83" cy="246.78" r="2.8" class="latent" />
+<line x1="1196.69" y1="292.57" x2="1132.15" y2="193.54" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1196.69" cy="292.57" r="2.2" class="ref" />
+<circle cx="1132.15" cy="193.54" r="2.8" class="latent" />
+<line x1="1095.19" y1="506.52" x2="1056.16" y2="526.14" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1095.19" cy="506.52" r="2.2" class="ref" />
+<circle cx="1056.16" cy="526.14" r="2.8" class="latent" />
+<line x1="971.60" y1="241.46" x2="1080.80" y2="244.13" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="971.60" cy="241.46" r="2.2" class="ref" />
+<circle cx="1080.80" cy="244.13" r="2.8" class="latent" />
+<text x="1084.80" y="240.13" class="label">BEL</text>
+<line x1="963.02" y1="458.33" x2="906.15" y2="442.22" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="963.02" cy="458.33" r="2.2" class="ref" />
+<circle cx="906.15" cy="442.22" r="2.8" class="latent" />
+<line x1="942.42" y1="429.57" x2="910.32" y2="438.58" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="942.42" cy="429.57" r="2.2" class="ref" />
+<circle cx="910.32" cy="438.58" r="2.8" class="latent" />
+<line x1="1397.03" y1="374.11" x2="1263.69" y2="312.68" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1397.03" cy="374.11" r="2.2" class="ref" />
+<circle cx="1263.69" cy="312.68" r="2.8" class="latent" />
+<text x="1267.69" y="308.68" class="label">BGD</text>
+<line x1="1065.32" y1="281.19" x2="1086.98" y2="243.99" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1065.32" cy="281.19" r="2.2" class="ref" />
+<circle cx="1086.98" cy="243.99" r="2.8" class="latent" />
+<text x="1090.98" y="239.99" class="label">BGR</text>
+<line x1="1199.87" y1="361.95" x2="1258.81" y2="310.13" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1199.87" cy="361.95" r="2.2" class="ref" />
+<circle cx="1258.81" cy="310.13" r="2.8" class="latent" />
+<line x1="567.60" y1="367.45" x2="573.97" y2="286.39" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="567.60" cy="367.45" r="2.2" class="ref" />
+<circle cx="573.97" cy="286.39" r="2.8" class="latent" />
+<line x1="1041.08" y1="275.57" x2="1081.58" y2="244.25" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1041.08" cy="275.57" r="2.2" class="ref" />
+<circle cx="1081.58" cy="244.25" r="2.8" class="latent" />
+<line x1="1086.35" y1="226.16" x2="1126.62" y2="192.67" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1086.35" cy="226.16" r="2.2" class="ref" />
+<circle cx="1126.62" cy="192.67" r="2.8" class="latent" />
+<line x1="511.08" y1="405.65" x2="573.52" y2="296.33" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="511.08" cy="405.65" r="2.2" class="ref" />
+<circle cx="573.52" cy="296.33" r="2.8" class="latent" />
+<line x1="630.06" y1="331.95" x2="569.37" y2="296.76" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="630.06" cy="331.95" r="2.2" class="ref" />
+<circle cx="569.37" cy="296.76" r="2.8" class="latent" />
+<line x1="622.71" y1="558.40" x2="774.26" y2="619.10" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="622.71" cy="558.40" r="2.2" class="ref" />
+<circle cx="774.26" cy="619.10" r="2.8" class="latent" />
+<text x="778.26" y="615.10" class="label">BOL</text>
+<line x1="713.02" y1="567.15" x2="567.11" y2="302.63" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="713.02" cy="567.15" r="2.2" class="ref" />
+<circle cx="567.11" cy="302.63" r="2.8" class="latent" />
+<text x="571.11" y="298.63" class="label">BRA</text>
+<line x1="655.26" y1="425.99" x2="580.48" y2="296.42" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="655.26" cy="425.99" r="2.2" class="ref" />
+<circle cx="580.48" cy="296.42" r="2.8" class="latent" />
+<line x1="1518.34" y1="465.84" x2="1499.97" y2="502.26" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1518.34" cy="465.84" r="2.2" class="ref" />
+<circle cx="1499.97" cy="502.26" r="2.8" class="latent" />
+<line x1="1393.11" y1="355.18" x2="1255.78" y2="312.92" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1393.11" cy="355.18" r="2.2" class="ref" />
+<circle cx="1255.78" cy="312.92" r="2.8" class="latent" />
+<line x1="1078.16" y1="610.53" x2="1074.54" y2="605.31" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1078.16" cy="610.53" r="2.2" class="ref" />
+<circle cx="1074.54" cy="605.31" r="2.8" class="latent" />
+<line x1="1057.00" y1="462.47" x2="1029.61" y2="466.02" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1057.00" cy="462.47" r="2.2" class="ref" />
+<circle cx="1029.61" cy="466.02" r="2.8" class="latent" />
+<line x1="575.75" y1="267.94" x2="568.43" y2="298.35" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="575.75" cy="267.94" r="2.2" class="ref" />
+<circle cx="568.43" cy="298.35" r="2.8" class="latent" />
+<text x="572.43" y="294.35" class="label">CAN</text>
+<line x1="986.83" y1="260.48" x2="1072.32" y2="247.24" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="986.83" cy="260.48" r="2.2" class="ref" />
+<circle cx="1072.32" cy="247.24" r="2.8" class="latent" />
+<text x="1076.32" y="243.24" class="label">CHE</text>
+<line x1="600.69" y1="653.66" x2="786.74" y2="612.72" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="600.69" cy="653.66" r="2.2" class="ref" />
+<circle cx="786.74" cy="612.72" r="2.8" class="latent" />
+<text x="790.74" y="608.72" class="label">CHL</text>
+<line x1="1524.97" y1="294.20" x2="1524.97" y2="294.20" stroke="#7b8794" stroke-width="1.8" opacity="0.7" />
+<circle cx="1524.97" cy="294.20" r="2.2" class="anchor" />
+<circle cx="1524.97" cy="294.20" r="2.8" class="anchor" />
+<text x="1528.97" y="290.20" class="label">CHN</text>
+<line x1="930.07" y1="463.93" x2="909.73" y2="439.96" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="930.07" cy="463.93" r="2.2" class="ref" />
+<circle cx="909.73" cy="439.96" r="2.8" class="latent" />
+<line x1="1006.95" y1="471.07" x2="901.79" y2="454.74" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1006.95" cy="471.07" r="2.2" class="ref" />
+<circle cx="901.79" cy="454.74" r="2.8" class="latent" />
+<line x1="1025.76" y1="511.14" x2="1068.11" y2="536.50" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1025.76" cy="511.14" r="2.2" class="ref" />
+<circle cx="1068.11" cy="536.50" r="2.8" class="latent" />
+<line x1="1025.48" y1="510.91" x2="1064.92" y2="542.03" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1025.48" cy="510.91" r="2.2" class="ref" />
+<circle cx="1064.92" cy="542.03" r="2.8" class="latent" />
+<line x1="583.71" y1="467.46" x2="566.93" y2="285.02" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="583.71" cy="467.46" r="2.2" class="ref" />
+<circle cx="566.93" cy="285.02" r="2.8" class="latent" />
+<text x="570.93" y="281.02" class="label">COL</text>
+<line x1="1163.81" y1="547.19" x2="1043.22" y2="464.88" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1163.81" cy="547.19" r="2.2" class="ref" />
+<circle cx="1043.22" cy="464.88" r="2.8" class="latent" />
+<line x1="833.76" y1="417.05" x2="1062.58" y2="246.60" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="833.76" cy="417.05" r="2.2" class="ref" />
+<circle cx="1062.58" cy="246.60" r="2.8" class="latent" />
+<text x="1066.58" y="242.60" class="label">CPV</text>
+<line x1="534.62" y1="442.89" x2="524.82" y2="421.82" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="534.62" cy="442.89" r="2.2" class="ref" />
+<circle cx="524.82" cy="421.82" r="2.8" class="latent" />
+<line x1="547.59" y1="395.63" x2="566.99" y2="301.70" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="547.59" cy="395.63" r="2.2" class="ref" />
+<circle cx="566.99" cy="301.70" r="2.8" class="latent" />
+<line x1="1115.01" y1="318.07" x2="1084.76" y2="245.63" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1115.01" cy="318.07" r="2.2" class="ref" />
+<circle cx="1084.76" cy="245.63" r="2.8" class="latent" />
+<line x1="1021.30" y1="245.13" x2="1084.55" y2="249.54" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1021.30" cy="245.13" r="2.2" class="ref" />
+<circle cx="1084.55" cy="249.54" r="2.8" class="latent" />
+<line x1="1016.31" y1="233.22" x2="1082.98" y2="248.47" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1016.31" cy="233.22" r="2.2" class="ref" />
+<circle cx="1082.98" cy="248.47" r="2.8" class="latent" />
+<text x="1086.98" y="244.47" class="label">DEU</text>
+<line x1="1163.32" y1="433.38" x2="1021.22" y2="482.10" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1163.32" cy="433.38" r="2.2" class="ref" />
+<circle cx="1021.22" cy="482.10" r="2.8" class="latent" />
+<line x1="646.46" y1="415.21" x2="571.13" y2="291.02" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="646.46" cy="415.21" r="2.2" class="ref" />
+<circle cx="571.13" cy="291.02" r="2.8" class="latent" />
+<line x1="1012.14" y1="217.80" x2="1088.51" y2="247.24" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1012.14" cy="217.80" r="2.2" class="ref" />
+<circle cx="1088.51" cy="247.24" r="2.8" class="latent" />
+<line x1="604.43" y1="399.66" x2="569.16" y2="299.33" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="604.43" cy="399.66" r="2.2" class="ref" />
+<circle cx="569.16" cy="299.33" r="2.8" class="latent" />
+<text x="573.16" y="295.33" class="label">DOM</text>
+<line x1="965.09" y1="310.38" x2="1060.11" y2="246.46" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="965.09" cy="310.38" r="2.2" class="ref" />
+<circle cx="1060.11" cy="246.46" r="2.8" class="latent" />
+<text x="1064.11" y="242.46" class="label">DZA</text>
+<line x1="561.74" y1="491.12" x2="565.68" y2="284.29" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="561.74" cy="491.12" r="2.2" class="ref" />
+<circle cx="565.68" cy="284.29" r="2.8" class="latent" />
+<text x="569.68" y="280.29" class="label">ECU</text>
+<line x1="1104.49" y1="342.85" x2="1071.34" y2="243.61" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1104.49" cy="342.85" r="2.2" class="ref" />
+<circle cx="1071.34" cy="243.61" r="2.8" class="latent" />
+<line x1="931.69" y1="292.41" x2="1078.14" y2="246.71" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="931.69" cy="292.41" r="2.2" class="ref" />
+<circle cx="1078.14" cy="246.71" r="2.8" class="latent" />
+<text x="1082.14" y="242.71" class="label">ESP</text>
+<line x1="1072.42" y1="199.41" x2="1136.47" y2="196.46" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1072.42" cy="199.41" r="2.2" class="ref" />
+<circle cx="1136.47" cy="196.46" r="2.8" class="latent" />
+<line x1="1141.58" y1="445.89" x2="1020.87" y2="487.90" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1141.58" cy="445.89" r="2.2" class="ref" />
+<circle cx="1020.87" cy="487.90" r="2.8" class="latent" />
+<line x1="1073.38" y1="195.88" x2="1090.17" y2="250.77" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1073.38" cy="195.88" r="2.2" class="ref" />
+<circle cx="1090.17" cy="250.77" r="2.8" class="latent" />
+<line x1="1832.08" y1="578.56" x2="1626.71" y2="247.01" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1832.08" cy="578.56" r="2.2" class="ref" />
+<circle cx="1626.71" cy="247.01" r="2.8" class="latent" />
+<text x="1630.71" y="243.01" class="label">FJI</text>
+<line x1="961.62" y1="251.15" x2="1078.65" y2="249.34" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="961.62" cy="251.15" r="2.2" class="ref" />
+<circle cx="1078.65" cy="249.34" r="2.8" class="latent" />
+<text x="1082.65" y="245.34" class="label">FRA</text>
+<line x1="915.82" y1="187.41" x2="1059.93" y2="246.25" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="915.82" cy="187.41" r="2.2" class="ref" />
+<circle cx="1059.93" cy="246.25" r="2.8" class="latent" />
+<line x1="1732.14" y1="456.18" x2="1766.91" y2="231.27" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1732.14" cy="456.18" r="2.2" class="ref" />
+<circle cx="1766.91" cy="231.27" r="2.8" class="latent" />
+<text x="1770.91" y="227.27" class="label">FSM</text>
+<line x1="996.73" y1="488.10" x2="927.64" y2="453.42" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="996.73" cy="488.10" r="2.2" class="ref" />
+<circle cx="927.64" cy="453.42" r="2.8" class="latent" />
+<line x1="949.38" y1="238.22" x2="1078.15" y2="248.21" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="949.38" cy="238.22" r="2.2" class="ref" />
+<circle cx="1078.15" cy="248.21" r="2.8" class="latent" />
+<text x="1082.15" y="244.21" class="label">GBR</text>
+<line x1="1171.48" y1="286.08" x2="1128.04" y2="197.01" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1171.48" cy="286.08" r="2.2" class="ref" />
+<circle cx="1128.04" cy="197.01" r="2.8" class="latent" />
+<line x1="948.97" y1="462.77" x2="915.32" y2="450.46" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="948.97" cy="462.77" r="2.2" class="ref" />
+<circle cx="915.32" cy="450.46" r="2.8" class="latent" />
+<line x1="882.26" y1="443.47" x2="769.32" y2="445.09" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="882.26" cy="443.47" r="2.2" class="ref" />
+<circle cx="769.32" cy="445.09" r="2.8" class="latent" />
+<line x1="867.98" y1="424.25" x2="923.63" y2="448.91" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="867.98" cy="424.25" r="2.2" class="ref" />
+<circle cx="923.63" cy="448.91" r="2.8" class="latent" />
+<text x="927.63" y="444.91" class="label">GMB</text>
+<line x1="874.94" y1="432.29" x2="916.60" y2="456.79" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="874.94" cy="432.29" r="2.2" class="ref" />
+<circle cx="916.60" cy="456.79" r="2.8" class="latent" />
+<line x1="993.38" y1="471.66" x2="879.45" y2="422.92" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="993.38" cy="471.66" r="2.2" class="ref" />
+<circle cx="879.45" cy="422.92" r="2.8" class="latent" />
+<text x="883.45" y="418.92" class="label">GNQ</text>
+<line x1="1067.27" y1="304.32" x2="1081.95" y2="248.55" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1067.27" cy="304.32" r="2.2" class="ref" />
+<circle cx="1081.95" cy="248.55" r="2.8" class="latent" />
+<line x1="644.71" y1="431.01" x2="582.20" y2="295.03" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="644.71" cy="431.01" r="2.2" class="ref" />
+<circle cx="582.20" cy="295.03" r="2.8" class="latent" />
+<line x1="694.27" y1="176.21" x2="1075.93" y2="246.93" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="694.27" cy="176.21" r="2.2" class="ref" />
+<circle cx="1075.93" cy="246.93" r="2.8" class="latent" />
+<text x="1079.93" y="242.93" class="label">GRL</text>
+<line x1="502.37" y1="418.50" x2="576.71" y2="302.94" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="502.37" cy="418.50" r="2.2" class="ref" />
+<circle cx="576.71" cy="302.94" r="2.8" class="latent" />
+<line x1="662.46" y1="456.73" x2="570.29" y2="299.14" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="662.46" cy="456.73" r="2.2" class="ref" />
+<circle cx="570.29" cy="299.14" r="2.8" class="latent" />
+<line x1="1514.21" y1="380.51" x2="1522.95" y2="295.55" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1514.21" cy="380.51" r="2.2" class="ref" />
+<circle cx="1522.95" cy="295.55" r="2.8" class="latent" />
+<line x1="517.53" y1="416.01" x2="569.45" y2="299.61" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="517.53" cy="416.01" r="2.2" class="ref" />
+<circle cx="569.45" cy="299.61" r="2.8" class="latent" />
+<text x="573.45" y="295.61" class="label">HND</text>
+<line x1="1028.92" y1="266.06" x2="1086.47" y2="247.62" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1028.92" cy="266.06" r="2.2" class="ref" />
+<circle cx="1086.47" cy="247.62" r="2.8" class="latent" />
+<line x1="592.37" y1="399.36" x2="569.06" y2="299.65" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="592.37" cy="399.36" r="2.2" class="ref" />
+<circle cx="569.06" cy="299.65" r="2.8" class="latent" />
+<line x1="1044.15" y1="257.79" x2="1083.88" y2="249.79" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1044.15" cy="257.79" r="2.2" class="ref" />
+<circle cx="1083.88" cy="249.79" r="2.8" class="latent" />
+<line x1="1478.21" y1="520.30" x2="1503.47" y2="502.65" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1478.21" cy="520.30" r="2.2" class="ref" />
+<circle cx="1503.47" cy="502.65" r="2.8" class="latent" />
+<line x1="1331.83" y1="350.01" x2="1264.89" y2="311.11" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1331.83" cy="350.01" r="2.2" class="ref" />
+<circle cx="1264.89" cy="311.11" r="2.8" class="latent" />
+<text x="1268.89" y="307.11" class="label">IND</text>
+<line x1="919.01" y1="229.21" x2="1077.55" y2="249.43" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="919.01" cy="229.21" r="2.2" class="ref" />
+<circle cx="1077.55" cy="249.43" r="2.8" class="latent" />
+<line x1="1204.37" y1="315.53" x2="1268.98" y2="310.26" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1204.37" cy="315.53" r="2.2" class="ref" />
+<circle cx="1268.98" cy="310.26" r="2.8" class="latent" />
+<line x1="1169.50" y1="327.05" x2="1076.19" y2="245.51" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1169.50" cy="327.05" r="2.2" class="ref" />
+<circle cx="1076.19" cy="245.51" r="2.8" class="latent" />
+<line x1="841.74" y1="176.45" x2="1083.46" y2="248.67" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="841.74" cy="176.45" r="2.2" class="ref" />
+<circle cx="1083.46" cy="248.67" r="2.8" class="latent" />
+<line x1="1124.06" y1="334.67" x2="1070.19" y2="249.90" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1124.06" cy="334.67" r="2.2" class="ref" />
+<circle cx="1070.19" cy="249.90" r="2.8" class="latent" />
+<line x1="1011.72" y1="285.18" x2="1080.35" y2="248.74" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1011.72" cy="285.18" r="2.2" class="ref" />
+<circle cx="1080.35" cy="248.74" r="2.8" class="latent" />
+<text x="1084.35" y="244.74" class="label">ITA</text>
+<line x1="570.31" y1="402.04" x2="580.44" y2="295.50" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="570.31" cy="402.04" r="2.2" class="ref" />
+<circle cx="580.44" cy="295.50" r="2.8" class="latent" />
+<line x1="1127.64" y1="333.80" x2="1078.36" y2="246.90" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1127.64" cy="333.80" r="2.2" class="ref" />
+<circle cx="1078.36" cy="246.90" r="2.8" class="latent" />
+<line x1="1641.09" y1="315.61" x2="1523.23" y2="295.02" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1641.09" cy="315.61" r="2.2" class="ref" />
+<circle cx="1523.23" cy="295.02" r="2.8" class="latent" />
+<line x1="1303.22" y1="239.75" x2="1126.33" y2="194.99" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1303.22" cy="239.75" r="2.2" class="ref" />
+<circle cx="1126.33" cy="194.99" r="2.8" class="latent" />
+<line x1="1132.02" y1="496.26" x2="1047.99" y2="491.87" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1132.02" cy="496.26" r="2.2" class="ref" />
+<circle cx="1047.99" cy="491.87" r="2.8" class="latent" />
+<line x1="1318.88" y1="280.34" x2="1133.18" y2="191.94" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1318.88" cy="280.34" r="2.2" class="ref" />
+<circle cx="1133.18" cy="191.94" r="2.8" class="latent" />
+<line x1="1468.54" y1="433.51" x2="1443.79" y2="351.64" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1468.54" cy="433.51" r="2.2" class="ref" />
+<circle cx="1443.79" cy="351.64" r="2.8" class="latent" />
+<line x1="1805.29" y1="483.50" x2="1776.02" y2="557.09" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1805.29" cy="483.50" r="2.2" class="ref" />
+<circle cx="1776.02" cy="557.09" r="2.8" class="latent" />
+<line x1="639.83" y1="405.42" x2="582.62" y2="296.00" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="639.83" cy="405.42" r="2.2" class="ref" />
+<circle cx="582.62" cy="296.00" r="2.8" class="latent" />
+<line x1="1577.73" y1="306.51" x2="1525.28" y2="293.66" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1577.73" cy="306.51" r="2.2" class="ref" />
+<circle cx="1525.28" cy="293.66" r="2.8" class="latent" />
+<line x1="1187.25" y1="346.40" x2="1266.00" y2="313.05" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1187.25" cy="346.40" r="2.2" class="ref" />
+<circle cx="1266.00" cy="313.05" r="2.8" class="latent" />
+<line x1="1455.21" y1="399.15" x2="1453.62" y2="349.58" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1455.21" cy="399.15" r="2.2" class="ref" />
+<circle cx="1453.62" cy="349.58" r="2.8" class="latent" />
+<line x1="1125.59" y1="324.33" x2="1073.04" y2="246.32" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1125.59" cy="324.33" r="2.2" class="ref" />
+<circle cx="1073.04" cy="246.32" r="2.8" class="latent" />
+<line x1="896.62" y1="459.20" x2="776.53" y2="442.53" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="896.62" cy="459.20" r="2.2" class="ref" />
+<circle cx="776.53" cy="442.53" r="2.8" class="latent" />
+<line x1="1014.81" y1="329.36" x2="1078.75" y2="241.98" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1014.81" cy="329.36" r="2.2" class="ref" />
+<circle cx="1078.75" cy="241.98" r="2.8" class="latent" />
+<line x1="648.47" y1="421.56" x2="571.48" y2="304.01" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="648.47" cy="421.56" r="2.2" class="ref" />
+<circle cx="571.48" cy="304.01" r="2.8" class="latent" />
+<line x1="1344.83" y1="456.16" x2="1260.47" y2="315.58" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1344.83" cy="456.16" r="2.2" class="ref" />
+<circle cx="1260.47" cy="315.58" r="2.8" class="latent" />
+<line x1="1087.04" y1="634.32" x2="1070.25" y2="599.28" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1087.04" cy="634.32" r="2.2" class="ref" />
+<circle cx="1070.25" cy="599.28" r="2.8" class="latent" />
+<line x1="1075.00" y1="222.63" x2="1122.61" y2="195.74" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1075.00" cy="222.63" r="2.2" class="ref" />
+<circle cx="1122.61" cy="195.74" r="2.8" class="latent" />
+<line x1="980.31" y1="247.46" x2="1067.43" y2="248.28" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="980.31" cy="247.46" r="2.2" class="ref" />
+<circle cx="1067.43" cy="248.28" r="2.8" class="latent" />
+<line x1="1069.18" y1="211.59" x2="1128.99" y2="194.65" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1069.18" cy="211.59" r="2.2" class="ref" />
+<circle cx="1128.99" cy="194.65" r="2.8" class="latent" />
+<line x1="916.03" y1="323.82" x2="1075.54" y2="244.32" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="916.03" cy="323.82" r="2.2" class="ref" />
+<circle cx="1075.54" cy="244.32" r="2.8" class="latent" />
+<text x="1079.54" y="240.32" class="label">MAR</text>
+<line x1="1092.65" y1="260.14" x2="1132.38" y2="194.91" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1092.65" cy="260.14" r="2.2" class="ref" />
+<circle cx="1132.38" cy="194.91" r="2.8" class="latent" />
+<line x1="1176.04" y1="590.06" x2="1046.88" y2="466.77" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1176.04" cy="590.06" r="2.2" class="ref" />
+<circle cx="1046.88" cy="466.77" r="2.8" class="latent" />
+<line x1="1313.47" y1="469.59" x2="1262.60" y2="310.74" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1313.47" cy="469.59" r="2.2" class="ref" />
+<circle cx="1262.60" cy="310.74" r="2.8" class="latent" />
+<line x1="459.87" y1="395.02" x2="567.10" y2="299.04" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="459.87" cy="395.02" r="2.2" class="ref" />
+<circle cx="567.10" cy="299.04" r="2.8" class="latent" />
+<text x="571.10" y="295.04" class="label">MEX</text>
+<line x1="1796.17" y1="455.24" x2="1767.26" y2="229.37" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1796.17" cy="455.24" r="2.2" class="ref" />
+<circle cx="1767.26" cy="229.37" r="2.8" class="latent" />
+<text x="1771.26" y="225.37" class="label">MHL</text>
+<line x1="1055.99" y1="284.65" x2="1066.69" y2="247.11" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1055.99" cy="284.65" r="2.2" class="ref" />
+<circle cx="1066.69" cy="247.11" r="2.8" class="latent" />
+<line x1="912.91" y1="423.67" x2="908.22" y2="439.78" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="912.91" cy="423.67" r="2.2" class="ref" />
+<circle cx="908.22" cy="439.78" r="2.8" class="latent" />
+<text x="912.22" y="435.78" class="label">MLI</text>
+<line x1="1021.79" y1="314.47" x2="1075.37" y2="243.65" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1021.79" cy="314.47" r="2.2" class="ref" />
+<circle cx="1075.37" cy="243.65" r="2.8" class="latent" />
+<line x1="1424.45" y1="382.86" x2="1450.26" y2="349.08" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1424.45" cy="382.86" r="2.2" class="ref" />
+<circle cx="1450.26" cy="349.08" r="2.8" class="latent" />
+<line x1="1478.74" y1="255.76" x2="1128.37" y2="195.94" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1478.74" cy="255.76" r="2.2" class="ref" />
+<circle cx="1128.37" cy="195.94" r="2.8" class="latent" />
+<text x="1132.37" y="191.94" class="label">MNG</text>
+<line x1="1111.05" y1="616.95" x2="1078.16" y2="599.08" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1111.05" cy="616.95" r="2.2" class="ref" />
+<circle cx="1078.16" cy="599.08" r="2.8" class="latent" />
+<line x1="870.98" y1="400.84" x2="918.18" y2="443.94" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="870.98" cy="400.84" r="2.2" class="ref" />
+<circle cx="918.18" cy="443.94" r="2.8" class="latent" />
+<line x1="1234.29" y1="588.56" x2="1077.34" y2="250.25" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1234.29" cy="588.56" r="2.2" class="ref" />
+<circle cx="1077.34" cy="250.25" r="2.8" class="latent" />
+<text x="1081.34" y="246.25" class="label">MUS</text>
+<line x1="1116.98" y1="558.40" x2="1079.16" y2="596.18" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1116.98" cy="558.40" r="2.2" class="ref" />
+<circle cx="1079.16" cy="596.18" r="2.8" class="latent" />
+<line x1="1452.77" y1="474.73" x2="1500.60" y2="502.04" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1452.77" cy="474.73" r="2.2" class="ref" />
+<circle cx="1500.60" cy="502.04" r="2.8" class="latent" />
+<line x1="1034.52" y1="600.32" x2="1074.74" y2="600.77" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1034.52" cy="600.32" r="2.2" class="ref" />
+<circle cx="1074.74" cy="600.77" r="2.8" class="latent" />
+<line x1="960.42" y1="423.93" x2="910.09" y2="446.42" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="960.42" cy="423.93" r="2.2" class="ref" />
+<circle cx="910.09" cy="446.42" r="2.8" class="latent" />
+<line x1="987.03" y1="445.72" x2="908.81" y2="444.54" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="987.03" cy="445.72" r="2.2" class="ref" />
+<circle cx="908.81" cy="444.54" r="2.8" class="latent" />
+<line x1="523.43" y1="430.61" x2="533.21" y2="418.58" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="523.43" cy="430.61" r="2.2" class="ref" />
+<circle cx="533.21" cy="418.58" r="2.8" class="latent" />
+<text x="537.21" y="414.58" class="label">NIC</text>
+<line x1="974.18" y1="233.95" x2="1075.64" y2="247.90" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="974.18" cy="233.95" r="2.2" class="ref" />
+<circle cx="1075.64" cy="247.90" r="2.8" class="latent" />
+<text x="1079.64" y="243.90" class="label">NLD</text>
+<line x1="1003.10" y1="197.09" x2="1084.22" y2="245.20" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1003.10" cy="197.09" r="2.2" class="ref" />
+<circle cx="1084.22" cy="245.20" r="2.8" class="latent" />
+<line x1="1371.84" y1="354.61" x2="1262.41" y2="310.04" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1371.84" cy="354.61" r="2.2" class="ref" />
+<circle cx="1262.41" cy="310.04" r="2.8" class="latent" />
+<line x1="1775.33" y1="492.68" x2="1776.58" y2="561.25" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1775.33" cy="492.68" r="2.2" class="ref" />
+<circle cx="1776.58" cy="561.25" r="2.8" class="latent" />
+<line x1="1814.17" y1="691.85" x2="1361.90" y2="257.22" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1814.17" cy="691.85" r="2.2" class="ref" />
+<circle cx="1361.90" cy="257.22" r="2.8" class="latent" />
+<text x="1365.90" y="253.22" class="label">NZL</text>
+<line x1="1239.68" y1="374.57" x2="1260.41" y2="310.57" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1239.68" cy="374.57" r="2.2" class="ref" />
+<circle cx="1260.41" cy="310.57" r="2.8" class="latent" />
+<line x1="1309.96" y1="340.81" x2="1271.25" y2="309.93" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1309.96" cy="340.81" r="2.2" class="ref" />
+<circle cx="1271.25" cy="309.93" r="2.8" class="latent" />
+<text x="1275.25" y="305.93" class="label">PAK</text>
+<line x1="556.82" y1="446.03" x2="564.00" y2="291.61" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="556.82" cy="446.03" r="2.2" class="ref" />
+<circle cx="564.00" cy="291.61" r="2.8" class="latent" />
+<line x1="569.05" y1="549.12" x2="580.90" y2="301.07" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="569.05" cy="549.12" r="2.2" class="ref" />
+<circle cx="580.90" cy="301.07" r="2.8" class="latent" />
+<text x="584.90" y="297.07" class="label">PER</text>
+<line x1="1548.45" y1="418.86" x2="1276.26" y2="315.12" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1548.45" cy="418.86" r="2.2" class="ref" />
+<circle cx="1276.26" cy="315.12" r="2.8" class="latent" />
+<text x="1280.26" y="311.12" class="label">PHL</text>
+<line x1="1614.92" y1="454.11" x2="1275.32" y2="298.78" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1614.92" cy="454.11" r="2.2" class="ref" />
+<circle cx="1275.32" cy="298.78" r="2.8" class="latent" />
+<text x="1279.32" y="294.78" class="label">PLW</text>
+<line x1="1677.79" y1="536.32" x2="1210.86" y2="276.46" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1677.79" cy="536.32" r="2.2" class="ref" />
+<circle cx="1210.86" cy="276.46" r="2.8" class="latent" />
+<text x="1214.86" y="272.46" class="label">PNG</text>
+<line x1="1053.93" y1="234.51" x2="1078.60" y2="246.91" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1053.93" cy="234.51" r="2.2" class="ref" />
+<circle cx="1078.60" cy="246.91" r="2.8" class="latent" />
+<text x="1082.60" y="242.91" class="label">POL</text>
+<line x1="623.67" y1="400.88" x2="569.46" y2="294.69" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="623.67" cy="400.88" r="2.2" class="ref" />
+<circle cx="569.46" cy="294.69" r="2.8" class="latent" />
+<line x1="904.83" y1="300.76" x2="1074.37" y2="249.65" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="904.83" cy="300.76" r="2.2" class="ref" />
+<circle cx="1074.37" cy="249.65" r="2.8" class="latent" />
+<text x="1078.37" y="245.65" class="label">PRT</text>
+<line x1="665.02" y1="613.69" x2="781.82" y2="617.29" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="665.02" cy="613.69" r="2.2" class="ref" />
+<circle cx="781.82" cy="617.29" r="2.8" class="latent" />
+<text x="785.82" y="613.29" class="label">PRY</text>
+<line x1="1204.68" y1="366.34" x2="1266.55" y2="311.16" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1204.68" cy="366.34" r="2.2" class="ref" />
+<circle cx="1266.55" cy="311.16" r="2.8" class="latent" />
+<line x1="1079.04" y1="272.70" x2="1070.57" y2="246.97" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1079.04" cy="272.70" r="2.2" class="ref" />
+<circle cx="1070.57" cy="246.97" r="2.8" class="latent" />
+<text x="1074.57" y="242.97" class="label">ROU</text>
+<line x1="1136.00" y1="217.42" x2="1131.86" y2="194.93" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1136.00" cy="217.42" r="2.2" class="ref" />
+<circle cx="1131.86" cy="194.93" r="2.8" class="latent" />
+<text x="1135.86" y="190.93" class="label">RUS</text>
+<line x1="1098.62" y1="499.55" x2="1070.16" y2="538.81" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1098.62" cy="499.55" r="2.2" class="ref" />
+<circle cx="1070.16" cy="538.81" r="2.8" class="latent" />
+<line x1="1180.89" y1="369.37" x2="1259.28" y2="314.81" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1180.89" cy="369.37" r="2.2" class="ref" />
+<circle cx="1259.28" cy="314.81" r="2.8" class="latent" />
+<line x1="1110.87" y1="413.77" x2="1284.47" y2="314.24" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1110.87" cy="413.77" r="2.2" class="ref" />
+<circle cx="1284.47" cy="314.24" r="2.8" class="latent" />
+<line x1="863.60" y1="418.01" x2="909.35" y2="440.87" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="863.60" cy="418.01" r="2.2" class="ref" />
+<circle cx="909.35" cy="440.87" r="2.8" class="latent" />
+<text x="913.35" y="436.87" class="label">SEN</text>
+<line x1="1463.48" y1="483.70" x2="1500.89" y2="500.29" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1463.48" cy="483.70" r="2.2" class="ref" />
+<circle cx="1500.89" cy="500.29" r="2.8" class="latent" />
+<line x1="1740.86" y1="536.09" x2="1171.63" y2="250.73" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1740.86" cy="536.09" r="2.2" class="ref" />
+<circle cx="1171.63" cy="250.73" r="2.8" class="latent" />
+<text x="1175.63" y="246.73" class="label">SLB</text>
+<line x1="884.67" y1="448.53" x2="765.12" y2="443.60" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="884.67" cy="448.53" r="2.2" class="ref" />
+<circle cx="765.12" cy="443.60" r="2.8" class="latent" />
+<line x1="508.92" y1="423.01" x2="561.85" y2="300.08" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="508.92" cy="423.01" r="2.2" class="ref" />
+<circle cx="561.85" cy="300.08" r="2.8" class="latent" />
+<line x1="1011.55" y1="275.22" x2="1072.15" y2="250.34" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1011.55" cy="275.22" r="2.2" class="ref" />
+<circle cx="1072.15" cy="250.34" r="2.8" class="latent" />
+<line x1="1174.11" y1="479.85" x2="1042.69" y2="492.47" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1174.11" cy="479.85" r="2.2" class="ref" />
+<circle cx="1042.69" cy="492.47" r="2.8" class="latent" />
+<line x1="982.67" y1="488.99" x2="906.71" y2="407.01" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="982.67" cy="488.99" r="2.2" class="ref" />
+<circle cx="906.71" cy="407.01" r="2.8" class="latent" />
+<line x1="677.23" y1="461.53" x2="573.37" y2="308.20" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="677.23" cy="461.53" r="2.2" class="ref" />
+<circle cx="573.37" cy="308.20" r="2.8" class="latent" />
+<line x1="1034.59" y1="254.61" x2="1082.59" y2="247.40" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1034.59" cy="254.61" r="2.2" class="ref" />
+<circle cx="1082.59" cy="247.40" r="2.8" class="latent" />
+<line x1="1021.72" y1="264.84" x2="1066.42" y2="246.73" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1021.72" cy="264.84" r="2.2" class="ref" />
+<circle cx="1066.42" cy="246.73" r="2.8" class="latent" />
+<line x1="1039.32" y1="199.93" x2="1086.03" y2="248.89" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1039.32" cy="199.93" r="2.2" class="ref" />
+<circle cx="1086.03" cy="248.89" r="2.8" class="latent" />
+<line x1="1105.58" y1="619.67" x2="1077.48" y2="606.41" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1105.58" cy="619.67" r="2.2" class="ref" />
+<circle cx="1077.48" cy="606.41" r="2.8" class="latent" />
+<line x1="1224.15" y1="512.64" x2="1076.48" y2="593.91" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1224.15" cy="512.64" r="2.2" class="ref" />
+<circle cx="1076.48" cy="593.91" r="2.8" class="latent" />
+<line x1="1129.54" y1="326.15" x2="1085.85" y2="247.41" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1129.54" cy="326.15" r="2.2" class="ref" />
+<circle cx="1085.85" cy="247.41" r="2.8" class="latent" />
+<line x1="598.25" y1="385.08" x2="577.85" y2="288.80" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="598.25" cy="385.08" r="2.2" class="ref" />
+<circle cx="577.85" cy="288.80" r="2.8" class="latent" />
+<line x1="1024.39" y1="430.82" x2="1029.68" y2="460.81" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1024.39" cy="430.82" r="2.2" class="ref" />
+<circle cx="1029.68" cy="460.81" r="2.8" class="latent" />
+<line x1="956.06" y1="460.07" x2="918.30" y2="447.10" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="956.06" cy="460.07" r="2.2" class="ref" />
+<circle cx="918.30" cy="447.10" r="2.8" class="latent" />
+<line x1="1447.02" y1="422.87" x2="1445.86" y2="348.08" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1447.02" cy="422.87" r="2.2" class="ref" />
+<circle cx="1445.86" cy="348.08" r="2.8" class="latent" />
+<line x1="1290.11" y1="301.35" x2="1125.74" y2="194.11" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1290.11" cy="301.35" r="2.2" class="ref" />
+<circle cx="1125.74" cy="194.11" r="2.8" class="latent" />
+<line x1="1238.65" y1="304.46" x2="1123.86" y2="193.86" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1238.65" cy="304.46" r="2.2" class="ref" />
+<circle cx="1123.86" cy="193.86" r="2.8" class="latent" />
+<line x1="1570.86" y1="531.88" x2="1502.54" y2="499.35" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1570.86" cy="531.88" r="2.2" class="ref" />
+<circle cx="1502.54" cy="499.35" r="2.8" class="latent" />
+<line x1="83.65" y1="593.33" x2="63.00" y2="262.58" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="83.65" cy="593.33" r="2.2" class="ref" />
+<circle cx="63.00" cy="262.58" r="2.8" class="latent" />
+<text x="67.00" y="258.58" class="label">TON</text>
+<line x1="646.02" y1="437.89" x2="565.15" y2="298.78" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="646.02" cy="437.89" r="2.2" class="ref" />
+<circle cx="565.15" cy="298.78" r="2.8" class="latent" />
+<line x1="1000.48" y1="310.14" x2="1077.90" y2="245.97" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1000.48" cy="310.14" r="2.2" class="ref" />
+<circle cx="1077.90" cy="245.97" r="2.8" class="latent" />
+<line x1="1110.01" y1="295.84" x2="1072.86" y2="248.70" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1110.01" cy="295.84" r="2.2" class="ref" />
+<circle cx="1072.86" cy="248.70" r="2.8" class="latent" />
+<text x="1076.86" y="244.70" class="label">TUR</text>
+<line x1="1835.50" y1="532.20" x2="1726.86" y2="393.26" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1835.50" cy="532.20" r="2.2" class="ref" />
+<circle cx="1726.86" cy="393.26" r="2.8" class="latent" />
+<line x1="1126.71" y1="520.19" x2="1057.71" y2="523.15" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1126.71" cy="520.19" r="2.2" class="ref" />
+<circle cx="1057.71" cy="523.15" r="2.8" class="latent" />
+<line x1="1111.05" y1="488.46" x2="1029.36" y2="491.81" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1111.05" cy="488.46" r="2.2" class="ref" />
+<circle cx="1029.36" cy="491.81" r="2.8" class="latent" />
+<line x1="1100.82" y1="243.34" x2="1127.92" y2="195.09" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1100.82" cy="243.34" r="2.2" class="ref" />
+<circle cx="1127.92" cy="195.09" r="2.8" class="latent" />
+<text x="1131.92" y="191.09" class="label">UKR</text>
+<line x1="672.78" y1="660.59" x2="776.68" y2="618.76" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="672.78" cy="660.59" r="2.2" class="ref" />
+<circle cx="776.68" cy="618.76" r="2.8" class="latent" />
+<text x="780.68" y="614.76" class="label">URY</text>
+<line x1="569.12" y1="299.87" x2="569.12" y2="299.87" stroke="#7b8794" stroke-width="1.8" opacity="0.7" />
+<circle cx="569.12" cy="299.87" r="2.2" class="anchor" />
+<circle cx="569.12" cy="299.87" r="2.8" class="anchor" />
+<text x="573.12" y="295.87" class="label">USA</text>
+<line x1="1292.50" y1="288.06" x2="1126.94" y2="193.78" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1292.50" cy="288.06" r="2.2" class="ref" />
+<circle cx="1126.94" cy="193.78" r="2.8" class="latent" />
+<line x1="647.08" y1="425.45" x2="575.23" y2="293.65" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="647.08" cy="425.45" r="2.2" class="ref" />
+<circle cx="575.23" cy="293.65" r="2.8" class="latent" />
+<line x1="1473.25" y1="387.30" x2="1447.49" y2="350.75" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1473.25" cy="387.30" r="2.2" class="ref" />
+<circle cx="1447.49" cy="350.75" r="2.8" class="latent" />
+<line x1="1782.25" y1="576.73" x2="1283.85" y2="245.60" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1782.25" cy="576.73" r="2.2" class="ref" />
+<circle cx="1283.85" cy="245.60" r="2.8" class="latent" />
+<text x="1287.85" y="241.60" class="label">VUT</text>
+<line x1="100.78" y1="557.62" x2="63.52" y2="229.49" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="100.78" cy="557.62" r="2.2" class="ref" />
+<circle cx="63.52" cy="229.49" r="2.8" class="latent" />
+<text x="67.52" y="225.49" class="label">WSM</text>
+<line x1="1089.37" y1="615.87" x2="1080.09" y2="600.68" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1089.37" cy="615.87" r="2.2" class="ref" />
+<circle cx="1080.09" cy="600.68" r="2.8" class="latent" />
+<text x="1084.09" y="596.68" class="label">ZAF</text>
+<line x1="1089.90" y1="565.28" x2="1079.51" y2="604.47" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1089.90" cy="565.28" r="2.2" class="ref" />
+<circle cx="1079.51" cy="604.47" r="2.8" class="latent" />
+<line x1="1103.61" y1="577.17" x2="1075.78" y2="601.48" stroke="#c1c7cd" stroke-width="1.0" opacity="0.7" />
+<circle cx="1103.61" cy="577.17" r="2.2" class="ref" />
+<circle cx="1075.78" cy="601.48" r="2.8" class="latent" />
+<circle cx="80" cy="68" r="3" class="ref" />
+<text x="92" y="72" class="legend">Reference position</text>
+<circle cx="240" cy="68" r="3" class="latent" />
+<text x="252" y="72" class="legend">Latent PPML position</text>
+</svg>

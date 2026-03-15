@@ -8,7 +8,7 @@ from pathlib import Path
 
 from .settings import Settings
 
-DEFAULT_LATENT_MODEL_PREFIXES = ["latent_geodesic_ppml", "latent_geodesic_penalized_ppml"]
+DEFAULT_LATENT_MODEL_PREFIXES = ["latent_geodesic_ppml", "latent_geodesic_penalized_ppml", "latent_geodesic_fe_ppml", "latent_geodesic_fe_penalized_ppml"]
 DEFAULT_FIXED_LABELS = {"ESP", "USA", "DEU", "ITA", "GBR", "MAR", "FRA", "CHN"}
 
 

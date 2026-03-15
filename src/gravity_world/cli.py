@@ -9,6 +9,7 @@ from .dyadic import normalize_cepii_controls
 from .flows import FLOW_METHOD_COLUMNS, normalize_abel_cohen_flows
 from .harmonize import build_country_reference
 from .latent_geodesic import estimate_latent_geodesic_ppml
+from .latent_geodesic_fe import estimate_latent_geodesic_fe_ppml
 from .model import (
     estimate_cepii_gravity_model,
     estimate_cepii_stock_gravity_model,
@@ -35,6 +36,8 @@ MODEL_PREFIX_CHOICES = [
     "cepii_stock_ppml",
     "latent_geodesic_ppml",
     "latent_geodesic_penalized_ppml",
+    "latent_geodesic_fe_ppml",
+    "latent_geodesic_fe_penalized_ppml",
 ]
 
 
@@ -147,6 +150,30 @@ def build_parser() -> argparse.ArgumentParser:
     )
     latent_geodesic_parser.set_defaults(command_name="estimate-latent-geodesic-model")
 
+    latent_geodesic_fe_parser = subparsers.add_parser(
+        "estimate-latent-geodesic-fe-model",
+        help="Estimate an experimental latent geodesic PPML with static origin and destination fixed effects.",
+    )
+    latent_geodesic_fe_parser.add_argument(
+        "--penalty-weight",
+        type=float,
+        default=0.0,
+        help="Quadratic displacement penalty multiplier toward the real-world reference coordinates. Use 0 for the unpenalized model.",
+    )
+    latent_geodesic_fe_parser.add_argument(
+        "--anchors",
+        nargs="+",
+        default=["ESP", "FRA"],
+        help="ISO3 country codes to keep fixed in the latent map. Provide at least two, for example `--anchors USA CHN`.",
+    )
+    latent_geodesic_fe_parser.add_argument(
+        "--progress-every",
+        type=int,
+        default=1,
+        help="Print one progress line every N outer coordinate iterations.",
+    )
+    latent_geodesic_fe_parser.set_defaults(command_name="estimate-latent-geodesic-fe-model")
+
     latent_map_parser = subparsers.add_parser(
         "plot-latent-country-maps",
         help="Render country-surface SVG maps for a latent geodesic model: one with countries fixed in place and one with shifted country shapes.",
@@ -154,7 +181,7 @@ def build_parser() -> argparse.ArgumentParser:
     latent_map_parser.add_argument(
         "--model-prefix",
         default="latent_geodesic_ppml",
-        choices=["latent_geodesic_ppml", "latent_geodesic_penalized_ppml"],
+        choices=["latent_geodesic_ppml", "latent_geodesic_penalized_ppml", "latent_geodesic_fe_ppml", "latent_geodesic_fe_penalized_ppml"],
         help="Latent model output prefix to visualize.",
     )
     latent_map_parser.set_defaults(command_name="plot-latent-country-maps")
@@ -271,6 +298,11 @@ def main() -> None:
 
     if args.command == "estimate-latent-geodesic-model":
         output_paths = estimate_latent_geodesic_ppml(settings, penalty_weight=args.penalty_weight, anchors=args.anchors)
+        _print_paths(output_paths)
+        return
+
+    if args.command == "estimate-latent-geodesic-fe-model":
+        output_paths = estimate_latent_geodesic_fe_ppml(settings, penalty_weight=args.penalty_weight, anchors=args.anchors, progress_every=args.progress_every)
         _print_paths(output_paths)
         return
 
